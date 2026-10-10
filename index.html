@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pattern Explorers — Balanced 25-Question Activity</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="app-container">
+
+  <!-- SCREEN 1: ONBOARDING / CONFIG -->
+  <div id="screen-welcome" class="screen hero-view active">
+    <div class="badge">Exploratory Classroom Activity</div>
+    <h1 class="hero-title">Visual Matrix Reasoning Activity</h1>
+    <p class="hero-subtitle">
+      A 25-question visual reasoning activity selected from a 64-question bank. Each session includes questions from all four item tags.
+    </p>
+
+    <div class="config-box">
+      <span class="config-label">Student Class/Grade:</span>
+      <div class="pill-selector" id="grade-selector">
+        <button class="pill-btn" data-grade="1">Class 1</button>
+        <button class="pill-btn selected" data-grade="2">Class 2</button>
+        <button class="pill-btn" data-grade="3">Class 3</button>
+        <button class="pill-btn" data-grade="4">Class 4</button>
+      </div>
+    </div>
+    <p class="config-note">Each session selects 6–7 questions from each item tag. Grade is recorded only; items are not age-normed. This prototype is not a standardized or diagnostic test.</p>
+
+    <button id="start-btn" class="primary-btn">
+      Start 25-Question Activity →
+    </button>
+  </div>
+
+  <!-- SCREEN 2: ACTIVE QUESTION TEST STAGE -->
+  <div id="screen-test" class="screen">
+    <div class="assessment-bar">
+      <div class="status-group">
+        <div class="item-counter" id="item-header-counter">Item 1 of 25</div>
+        <div class="tier-badge" id="item-tier-badge">Tier 1</div>
+        <div class="construct-tag" id="item-construct-badge">Alternation</div>
+      </div>
+
+      <!-- Redesigned progress bar with floating thumb -->
+      <div class="progress-wrapper">
+        <div class="progress-track" id="progress-track">
+          <div class="progress-fill" id="assessment-progress"></div>
+          <div class="progress-indicator-thumb" id="progress-thumb"></div>
+        </div>
+      </div>
+
+      <div class="status-group">
+        <div class="timer-display" id="session-timer">00:00</div>
+        <button id="open-nav-btn" class="secondary-btn compact-btn" type="button">Jump</button>
+      </div>
+    </div>
+
+    <div class="assessment-body">
+      <div class="matrix-display-container">
+        <div id="matrix-render-target" class="matrix-display grid-1x4">
+          <!-- Dynamically populated matrix cells -->
+        </div>
+      </div>
+
+      <div class="options-tray" id="options-render-target">
+        <!-- Dynamically populated 4 options -->
+      </div>
+
+      <div class="action-row">
+        <button id="prev-btn" class="secondary-btn">← Previous</button>
+        <span class="keyboard-hint">Keyboard: 1–4 or A–D</span>
+        <button id="next-btn" class="primary-btn" type="button" disabled>Confirm & Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DIRECT QUESTION JUMP / INSPECTOR -->
+  <div id="nav-modal">
+    <div class="nav-modal-card">
+      <div class="nav-modal-heading">
+        <h3>Session Questions (25)</h3>
+        <button id="close-nav-btn" class="secondary-btn compact-btn" type="button" aria-label="Close question navigator">✕</button>
+      </div>
+      <p class="nav-modal-description">
+        Choose any item to review its diagram.
+      </p>
+      <div class="nav-grid-jump" id="nav-jump-container"></div>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: DESCRIPTIVE SESSION RESULTS -->
+  <div id="screen-results" class="screen">
+    <div class="assessment-bar">
+      <div class="item-counter">Session Results</div>
+      <button id="export-json-btn" class="secondary-btn compact-btn" type="button">Export Results JSON</button>
+    </div>
+
+    <div class="results-layout">
+      <!-- Left Column: Metrics -->
+      <div class="results-card">
+        <h3 class="results-heading">Observed Results</h3>
+
+        <div class="stat-row">
+          <div class="stat-tile">
+            <span class="stat-num" id="res-score">0/25</span>
+            <span class="stat-label">Correct Answers</span>
+          </div>
+          <div class="stat-tile">
+            <span class="stat-num" id="res-latency">0s</span>
+            <span class="stat-label">Avg. Time to First Answer</span>
+          </div>
+        </div>
+        <p class="answered-count" id="res-answered">Answered 0/25</p>
+        <p class="results-intro">Descriptive result for these 25 questions only. This activity has not been standardized or validated for ability, diagnosis, grade placement, or comparison between students.</p>
+
+        <div class="construct-meter">
+          <p class="results-intro">Exploratory counts by item tag only. Categories may have very few sampled items; they are not validated skill scores.</p>
+          <div class="meter-item">
+            <div class="meter-label-row">
+              <span>Pattern & Alternation</span>
+              <span id="meter-val-pattern">0%</span>
+            </div>
+            <div class="meter-track"><div class="meter-fill" id="meter-bar-pattern"></div></div>
+          </div>
+          <div class="meter-item">
+            <div class="meter-label-row">
+              <span>Spatial Transformation</span>
+              <span id="meter-val-spatial">0%</span>
+            </div>
+            <div class="meter-track"><div class="meter-fill" id="meter-bar-spatial"></div></div>
+          </div>
+          <div class="meter-item">
+            <div class="meter-label-row">
+              <span>Analogical Mapping</span>
+              <span id="meter-val-analogy">0%</span>
+            </div>
+            <div class="meter-track"><div class="meter-fill" id="meter-bar-analogy"></div></div>
+          </div>
+          <div class="meter-item">
+            <div class="meter-label-row">
+              <span>Multi-Rule Integration</span>
+              <span id="meter-val-multirule">0%</span>
+            </div>
+            <div class="meter-track"><div class="meter-fill" id="meter-bar-multirule"></div></div>
+          </div>
+        </div>
+
+        <button id="restart-btn" class="secondary-btn restart-btn" type="button">Start New Session</button>
+      </div>
+
+      <!-- Right Column: Tutor Scaffolding Directives -->
+      <div class="results-card">
+        <h3 class="results-heading">Practice Ideas · Exploratory</h3>
+        <p class="results-intro">
+          These prompts are not evidence of a learning need or ability.
+        </p>
+
+        <div class="tutor-box">
+          <div class="tutor-box-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Discussion Prompt
+          </div>
+          <div class="tutor-box-text" id="tutor-rec-step">
+            Evaluating profile...
+          </div>
+        </div>
+
+        <div class="tutor-box tutor-box-blue">
+          <div class="tutor-box-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            Visual Practice Idea
+          </div>
+          <div class="tutor-box-text" id="tutor-rec-visual">
+            Evaluating profile...
+          </div>
+        </div>
+
+        <div class="review-drawer">
+          <h4 class="review-heading">Question-by-Question Review</h4>
+          <div class="review-grid" id="review-chips-container"></div>
+          <div id="review-detail-box" class="review-detail" hidden></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script defer src="questions.js"></script>
+<script defer src="app.js"></script>
+</body>
+</html>
