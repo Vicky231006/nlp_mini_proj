@@ -1,6 +1,6 @@
 // src/components/Student/OnboardingWorkflow.jsx
 import React, { useState } from 'react';
-import { mockApiService } from '../../mockApi';
+import { demoApiService } from '../../demoApi';
 
 const steps = {
   INTRO: 'intro',
@@ -53,14 +53,14 @@ function CpmAssessment({ currentQuestionIndex, onAnswerSubmit }) {
   );
 }
 
-const OnboardingWorkflow = ({ onComplete }) => {
+const OnboardingWorkflow = () => {
   const [currentStep, setCurrentStep] = useState(steps.INTRO);
   const [profileData, setProfileData] = useState(null);
   const [cpmQuestionIndex, setCpmQuestionIndex] = useState(0);
 
   const startCpm = async () => {
     setCurrentStep(steps.CPM_START);
-    await mockApiService.startCpmAssessment();
+    await demoApiService.startCpmAssessment();
     setCurrentStep(steps.CPM_QUESTION);
   };
 
@@ -69,9 +69,8 @@ const OnboardingWorkflow = ({ onComplete }) => {
       setCpmQuestionIndex(prev => prev + 1);
     } else {
       setCurrentStep(steps.PROFILE_GEN);
-      const profile = await mockApiService.submitCpmAnswers();
+      const profile = await demoApiService.submitCpmAnswers();
       setProfileData(profile);
-      onComplete(profile);
       setCurrentStep(steps.COMPLETE);
     }
   };

@@ -1,6 +1,6 @@
 // src/components/Admin/AnalyticsDashboard.jsx
 import React, { useState, useEffect } from 'react';
-import { mockApiService } from '../../mockApi';
+import { demoApiService } from '../../demoApi';
 
 function StatCard({ title, value, unit, bgColor }) {
   return (
@@ -17,7 +17,7 @@ const AnalyticsDashboard = () => {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    mockApiService.getLearningAnalytics().then(setData);
+    demoApiService.getLearningAnalytics().then(setData);
   }, []);
 
   if (!data) return <p className="text-center font-bold text-slate-500">Loading analytics...</p>;

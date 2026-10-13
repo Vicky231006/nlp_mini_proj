@@ -14,13 +14,12 @@ const tabs = [
 
 function App() {
   const [activeTab, setActiveTab] = useState('onboard');
-  const [learnerState, setLearnerState] = useState(null);
 
   const renderContent = () => {
     switch (activeTab) {
       case 'ingest': return <ContentIngestion />;
-      case 'onboard': return <OnboardingWorkflow onComplete={setLearnerState} />;
-      case 'tutor': return <TutoringSession currentLearnerState={learnerState} />;
+      case 'onboard': return <OnboardingWorkflow />;
+      case 'tutor': return <TutoringSession />;
       case 'analytics': return <AnalyticsDashboard />;
       default: return <div>Select a station.</div>;
     }

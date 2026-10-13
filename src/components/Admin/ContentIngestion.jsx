@@ -1,6 +1,6 @@
 // src/components/Admin/ContentIngestion.jsx
 import React, { useState } from 'react';
-import { mockApiService } from '../../mockApi';
+import { demoApiService } from '../../demoApi';
 
 function IngestionLane({ title, icon, onFileSelect }) {
   return (
@@ -22,7 +22,7 @@ const ContentIngestion = () => {
     if (!file) return;
     setDemoStatus(`Previewing file selection for ${laneType}: ${file.name}...`);
     try {
-      const result = await mockApiService.ingestContent(file, laneType);
+      const result = await demoApiService.ingestContent(file, laneType);
       setDemoStatus(result.message);
     } catch (err) {
       setDemoStatus(`Demo failed: ${err.message}`);
