@@ -22,6 +22,9 @@ pnpm-debug.log*
 !.env.example
 !**/.env.example
 
+# Local account data (SQLite)
+data/
+
 # Operating-system and IDE files
 *.suo
 *.ntvs*
@@ -29,3 +32,4 @@ pnpm-debug.log*
 *.sln
 *.sw?
 *.local
+.playwright-mcp

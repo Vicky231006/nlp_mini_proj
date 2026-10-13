@@ -1,4 +1,3 @@
-export const ASSESSMENT_PROFILE_STORAGE_KEY = 'nc-reasoning-practice-profile-v1';
 export const ASSESSMENT_QUESTION_COUNT = 25;
 
 export const ASSESSMENT_DIMENSIONS = [

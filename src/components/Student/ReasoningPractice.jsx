@@ -1,14 +1,10 @@
 import React, { useState } from 'react';
 import {
   ASSESSMENT_DIMENSIONS,
-  ASSESSMENT_PROFILE_STORAGE_KEY,
-  ASSESSMENT_QUESTION_COUNT,
-  calculateAssessmentResults,
-  createAssessmentProfile,
-  createAssessmentSession
+  ASSESSMENT_QUESTION_COUNT
 } from '../../../shared/assessment';
-import { ITEM_BANK } from '../../assessment/questionBank';
 import { QuestionVisual } from '../../assessment/QuestionVisual';
+import { createAssessmentAttempt, submitAssessment } from '../../accountApi';
 
 const STEPS = {
   INTRO: 'intro',
@@ -136,36 +132,53 @@ function ScoreCard({ label, score, color }) {
   );
 }
 
-const ReasoningPractice = ({ onOpenTutor }) => {
+const ReasoningPractice = ({ onOpenTutor, onComplete }) => {
   const [step, setStep] = useState(STEPS.INTRO);
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [results, setResults] = useState(null);
-  const [storageWarning, setStorageWarning] = useState(false);
+  const [answerReview, setAnswerReview] = useState([]);
+  const [attemptId, setAttemptId] = useState(null);
+  const [error, setError] = useState('');
+  const [isStarting, setIsStarting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const startPractice = () => {
-    setQuestions(createAssessmentSession(ITEM_BANK));
-    setAnswers(Array(ASSESSMENT_QUESTION_COUNT).fill(null));
-    setCurrentIndex(0);
-    setResults(null);
-    setStorageWarning(false);
-    setStep(STEPS.QUESTIONS);
+  const startPractice = async () => {
+    if (isStarting) return;
+    setIsStarting(true);
+    setError('');
+    try {
+      const attempt = await createAssessmentAttempt();
+      setAttemptId(attempt.attemptId);
+      setQuestions(attempt.questions);
+      setAnswers(Array(ASSESSMENT_QUESTION_COUNT).fill(null));
+      setCurrentIndex(0);
+      setResults(null);
+      setAnswerReview([]);
+      setStep(STEPS.QUESTIONS);
+    } catch (startError) {
+      setError(startError instanceof Error ? startError.message : 'Could not start the puzzle set.');
+    } finally {
+      setIsStarting(false);
+    }
   };
 
-  const finishPractice = () => {
-    const summary = calculateAssessmentResults(questions, answers);
-    setResults(summary);
+  const finishPractice = async () => {
+    if (!attemptId || isSubmitting) return;
+    setIsSubmitting(true);
+    setError('');
     try {
-      localStorage.setItem(
-        ASSESSMENT_PROFILE_STORAGE_KEY,
-        JSON.stringify(createAssessmentProfile(summary))
-      );
-      setStorageWarning(false);
-    } catch {
-      setStorageWarning(true);
+      const saved = await submitAssessment(attemptId, questions, answers);
+      setResults(saved.results);
+      setAnswerReview(saved.review);
+      onComplete(saved.profile);
+      setStep(STEPS.RESULTS);
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : 'Could not save your results.');
+    } finally {
+      setIsSubmitting(false);
     }
-    setStep(STEPS.RESULTS);
   };
 
   const selectOption = (optionId) => {
@@ -179,7 +192,7 @@ const ReasoningPractice = ({ onOpenTutor }) => {
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <header className="border-b-2 border-slate-300 pb-4">
-        <p className="text-sm font-bold text-indigo-700">Your learning adventure</p>
+        <p className="text-sm font-bold text-red-700">Your first stop</p>
         <h2 className="mt-1 text-2xl font-black text-slate-900">Puzzle practice</h2>
         <p className="mt-2 text-sm text-slate-700">
           Explore patterns, shapes, and clues at your own pace.
@@ -216,9 +229,10 @@ const ReasoningPractice = ({ onOpenTutor }) => {
           <button
             type="button"
             onClick={startPractice}
-            className="w-full rounded-xl border-2 border-slate-900 bg-indigo-600 px-6 py-3 text-lg font-black text-white shadow-[3px_3px_0px_#0f172a] transition hover:bg-indigo-700 focus-visible:outline focus-visible:outline-4 focus-visible:outline-amber-400 sm:w-auto"
+            disabled={isStarting}
+            className="w-full rounded-xl border-2 border-slate-900 bg-red-600 px-6 py-3 text-lg font-black text-white shadow-[3px_3px_0px_#0f172a] transition hover:bg-red-700 focus-visible:outline focus-visible:outline-4 focus-visible:outline-amber-400 disabled:opacity-50 sm:w-auto"
           >
-            Start puzzle practice
+            {isStarting ? 'Getting puzzles ready…' : 'Start puzzle check-in'}
           </button>
         </section>
       )}
@@ -266,9 +280,10 @@ const ReasoningPractice = ({ onOpenTutor }) => {
               onClick={() => currentIndex < questions.length - 1
                 ? setCurrentIndex((index) => index + 1)
                 : finishPractice()}
-              className="rounded-xl border-2 border-slate-900 bg-indigo-600 px-5 py-2 font-black text-white shadow-[2px_2px_0px_#0f172a] hover:bg-indigo-700"
+              disabled={isSubmitting}
+              className="rounded-xl border-2 border-slate-900 bg-red-600 px-5 py-2 font-black text-white shadow-[2px_2px_0px_#0f172a] hover:bg-red-700 disabled:opacity-50"
             >
-              {currentIndex === questions.length - 1 ? 'See my results' : 'Next puzzle'}
+              {isSubmitting ? 'Saving results…' : currentIndex === questions.length - 1 ? 'See my results' : 'Next puzzle'}
             </button>
           </div>
           {answers[currentIndex] === null && (
@@ -308,27 +323,21 @@ const ReasoningPractice = ({ onOpenTutor }) => {
             puzzles and is not a validated skill score. Your tutor uses the results only to choose
             helpful ways to explain things, never to label or rank you.
           </p>
-          {storageWarning && (
-            <p role="alert" className="rounded-xl bg-red-100 p-3 text-sm font-bold text-red-900">
-              Your browser could not save this practice snapshot, so the tutor may not be able to
-              use it to personalize explanations.
-            </p>
-          )}
-
           <details className="rounded-xl border border-slate-300 p-4">
             <summary className="cursor-pointer font-bold text-indigo-800">Review the answers</summary>
             <ol className="mt-3 space-y-3">
               {questions.map((item, index) => {
-                const correctOption = item.options.find((option) => option.correct);
+                const review = answerReview.find((entry) => entry.questionId === item.id);
+                const correctOption = item.options.find((option) => option.id === review?.correctOptionId);
                 const pickedOption = item.options.find((option) => option.id === answers[index]);
                 return (
                   <li key={item.id} className="rounded-lg bg-slate-50 p-3 text-sm">
                     <p className="font-bold text-slate-900">Puzzle {index + 1}</p>
                     <p className="mt-1 text-slate-700">
                       {pickedOption ? `Your choice: ${describeShapes(pickedOption.shapes)}.` : 'You skipped this puzzle.'}
-                      {' '}One answer is {describeShapes(correctOption.shapes)}.
+                      {' '}One answer is {correctOption ? describeShapes(correctOption.shapes) : 'shown in the result'}.
                     </p>
-                    <p className="mt-1 text-xs text-slate-600">{correctOption.rationale}</p>
+                    <p className="mt-1 text-xs text-slate-600">{review?.rationale}</p>
                   </li>
                 );
               })}
@@ -338,9 +347,10 @@ const ReasoningPractice = ({ onOpenTutor }) => {
           <button
             type="button"
             onClick={startPractice}
-            className="w-full rounded-xl border-2 border-slate-900 bg-indigo-600 px-6 py-3 font-black text-white hover:bg-indigo-700 sm:w-auto"
+            disabled={isStarting}
+            className="w-full rounded-xl border-2 border-slate-900 bg-red-600 px-6 py-3 font-black text-white hover:bg-red-700 disabled:opacity-50 sm:w-auto"
           >
-            Try a fresh set
+            {isStarting ? 'Getting puzzles ready…' : 'Try a fresh set'}
           </button>
           {onOpenTutor && (
             <button
@@ -352,6 +362,11 @@ const ReasoningPractice = ({ onOpenTutor }) => {
             </button>
           )}
         </section>
+      )}
+      {error && (
+        <p role="alert" className="rounded-xl border-2 border-red-800 bg-red-100 p-3 text-sm font-bold text-red-900">
+          {error}
+        </p>
       )}
     </div>
   );
