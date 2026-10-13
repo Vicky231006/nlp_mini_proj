@@ -1,27 +1,22 @@
-// src/mockApi.js
-import { GoogleGenAI } from '@google/genai';
-
 export const mockApiService = {
-  // --- OFFLINE INGESTION ---
+  // These local responses keep the prototype navigable without a backend.
   ingestContent: async (file, type) => {
-    console.log(`Starting ingest for ${type}: ${file.name}`);
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve({
-          status: 'success',
+          status: 'demo',
           jobId: `job_${Date.now()}`,
-          message: `${type} processing started. (Diagram: NCERT Ingestion lane)`
+          message: `Prototype only: ${file.name} was selected for the ${type} lane. The file was not uploaded or processed.`
         });
       }, 1500);
     });
   },
 
-  // --- LEARNER ONBOARDING ---
   startCpmAssessment: async () => {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve({
-          status: 'ready',
+          status: 'demo',
           assessmentId: `cpm_${Date.now()}`,
           totalQuestions: 25
         });
@@ -29,11 +24,11 @@ export const mockApiService = {
     });
   },
 
-  submitCpmAnswers: async (cpmResult) => {
+  submitCpmAnswers: async () => {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve({
-          status: 'completed',
+          status: 'demo',
           cognitiveProfile: {
             reasoningSkill: { pattern: 4.2, analogicalMapping: 3.8 },
             state: { conceptMastery: {} }
@@ -43,61 +38,55 @@ export const mockApiService = {
     });
   },
 
-  // --- REAL AI ONLINE TUTORING PIPELINE (GEMINI SDK) ---
   sendStudentQuery: async (query, learnerState) => {
-    console.log("Sending query to Gemini via SDK...", query);
+    const response = await fetch('/api/tutor', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, learnerState })
+    });
 
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-
-    try {
-      // Explicitly allow browser execution and pass key
-      const ai = new GoogleGenAI({ 
-        apiKey: apiKey,
-        dangerouslyAllowBrowser: true 
-      });
-      
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: `You are an adaptive curriculum tutor. Explain concepts clearly and concisely, cite relevant NCERT textbook chapters/pages, and adapt your explanation to the learner's cognitive profile: ${JSON.stringify(learnerState || {})}\n\nStudent Query: ${typeof query === 'string' ? query : 'Explain the query.'}`,
-      });
-
-      const replyText = response.text || "No response received.";
-
-      return {
-        transcribedText: null,
-        status: 'success',
-        response: {
-          text: replyText,
-          hasAudio: false,
-          citations: ["NCERT Curriculum Grounding (Gemini AI)"]
-        },
-        safeResponse: true
-      };
-
-    } catch (err) {
-      console.warn("Gemini connection error:", err);
-      
-      return {
-        transcribedText: null,
-        status: 'success',
-        response: {
-          text: `[System Note]: Connection error: ${err.message || err}`,
-          hasAudio: false,
-          citations: ["NCERT Core Reference Manual"]
-        },
-        safeResponse: true
-      };
+    if (!response.ok) {
+      throw new Error(`Tutor API returned HTTP ${response.status}. Configure the server-side /api/tutor endpoint.`);
     }
+
+    const payload = await response.json();
+    if (
+      typeof payload !== 'object'
+      || payload === null
+      || typeof payload.text !== 'string'
+      || !payload.text.trim()
+      || !Array.isArray(payload.citations)
+      || payload.citations.some((citation) => typeof citation !== 'string')
+    ) {
+      throw new Error('Tutor API returned an invalid response. Expected text and a citations array.');
+    }
+
+    return {
+      status: 'success',
+      response: {
+        text: payload.text,
+        citations: payload.citations
+      }
+    };
   },
 
-  // --- ANALYTICS ---
   getLearningAnalytics: async () => {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve({
-          performanceTracking: [],
-          conceptMastery: {},
-          learnerStateUpdate: {}
+          stats: [
+            { title: 'Total Interactions', value: 142, unit: 'sample' },
+            { title: 'Concept Mastery Flow', value: 78, unit: '%' },
+            { title: 'Average Skill Level', value: '+0.6', unit: '/5.0' }
+          ],
+          concepts: [
+            { name: 'Cellular Respiration (Ch5)', status: 'Example gap (18%)' },
+            { name: 'Newtonian Mechanics (Ch12)', status: 'Example gap (34%)' }
+          ],
+          recentUpdates: [
+            "Example only: Trainer #1045 — concept 'Mitosis' marked as mastered.",
+            'Example only: Trainer #1089 — spatial reasoning practice adjusted.'
+          ]
         });
       }, 1000);
     });

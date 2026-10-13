@@ -14,9 +14,9 @@ function CpmAssessment({ currentQuestionIndex, onAnswerSubmit }) {
   return (
     <div className="pixel-card bg-white p-6 md:p-8 space-y-6">
       <div className="border-b-4 border-slate-900 pb-4 flex justify-between items-center">
-        <h3 className="text-xl font-black text-slate-800">Coloured Reasoning Assessment</h3>
+        <h3 className="text-xl font-black text-slate-800">Reasoning Interaction Demo</h3>
         <span className="bg-emerald-400 border-2 border-slate-900 font-bold px-3 py-1 rounded-full text-xs text-slate-900">
-          Ready for Adventure
+          Placeholder item
         </span>
       </div>
 
@@ -28,11 +28,11 @@ function CpmAssessment({ currentQuestionIndex, onAnswerSubmit }) {
             <div className="bg-yellow-400 rounded" />
             <div className="bg-slate-300 rounded flex items-center justify-center font-bold border border-slate-900 text-lg">?</div>
           </div>
-          <span className="text-xs font-bold text-slate-600">Complex Matrix Puzzle #{currentQuestionIndex + 1}</span>
+          <span className="text-xs font-bold text-slate-600">Repeated demo screen {currentQuestionIndex + 1} of 25</span>
         </div>
 
         <div className="space-y-3">
-          <p className="text-sm font-bold text-slate-700">Select 3D-Effect Choice:</p>
+          <p className="text-sm font-bold text-slate-700">Tap any choice to advance; answers are not recorded:</p>
           <div className="grid grid-cols-2 gap-3">
             {[1, 2, 3, 4].map((choice, idx) => {
               const colors = ['bg-red-400', 'bg-blue-400', 'bg-yellow-400', 'bg-emerald-400'];
@@ -64,12 +64,12 @@ const OnboardingWorkflow = ({ onComplete }) => {
     setCurrentStep(steps.CPM_QUESTION);
   };
 
-  const submitCpmAnswer = async (answer) => {
+  const submitCpmAnswer = async () => {
     if (cpmQuestionIndex < 24) {
       setCpmQuestionIndex(prev => prev + 1);
     } else {
       setCurrentStep(steps.PROFILE_GEN);
-      const profile = await mockApiService.submitCpmAnswers({});
+      const profile = await mockApiService.submitCpmAnswers();
       setProfileData(profile);
       onComplete(profile);
       setCurrentStep(steps.COMPLETE);
@@ -81,7 +81,7 @@ const OnboardingWorkflow = ({ onComplete }) => {
       <div className="flex items-center justify-between border-b-4 border-slate-900 pb-2">
         <h2 className="text-2xl font-black text-slate-800">Trainer Station</h2>
         <span className="text-xs font-bold bg-amber-200 border-2 border-slate-900 px-3 py-1 rounded-full">
-          Assessment Mode
+          Demo Flow
         </span>
       </div>
 
@@ -91,7 +91,7 @@ const OnboardingWorkflow = ({ onComplete }) => {
             🎒
           </div>
           <p className="text-base font-bold text-slate-700">
-            Welcome Trainer! Complete the initial Coloured Reasoning Assessment to generate your Cognitive Profile Dimensions before embarking on curriculum quests.
+            Explore a sample onboarding flow. This repeated placeholder puzzle is not scored, and the profile shown at the end is example data.
           </p>
           <button
             onClick={startCpm}
@@ -109,12 +109,15 @@ const OnboardingWorkflow = ({ onComplete }) => {
       {currentStep === steps.COMPLETE && profileData && (
         <div className="space-y-6">
           <div className="bg-emerald-300 border-4 border-slate-900 p-4 rounded-2xl text-slate-900 text-center font-bold shadow-[3px_3px_0px_#0f172a]">
-            🎉 Onboarding Complete! Trainer ID and Profile generated.
+            🎉 Demo flow complete. An example profile is shown below.
           </div>
 
           <div className="bg-white p-6 rounded-2xl border-4 border-slate-900 shadow-[4px_4px_0px_#0f172a] space-y-4">
+            <p className="rounded-lg border border-amber-400 bg-amber-100 p-3 text-sm font-bold text-amber-950">
+              Example profile only. The answers in this demo are not recorded or used to calculate these values.
+            </p>
             <h5 className="font-black text-slate-800 text-lg border-b-2 border-slate-900 pb-2">
-              Cognitive Profile Dimensions
+              Sample Profile Dimensions
             </h5>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {Object.entries(profileData.cognitiveProfile.reasoningSkill).map(([key, val]) => (

@@ -1,16 +1,40 @@
-# React + Vite
+# NC Tutoring Prototype
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A browser-based React prototype for exploring student onboarding, curriculum tutoring, content-ingestion, and analytics workflows. It is a frontend demonstration, not a complete or validated tutoring service.
 
-Currently, two official plugins are available:
+## Run locally
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Use a Node.js version supported by Vite 8, then run:
 
-## React Compiler
+```sh
+npm ci
+npm run dev
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+The development server prints the local URL. The other project checks are:
 
-## Expanding the Oxlint configuration
+```sh
+npm run lint
+npm run build
+npm run preview
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## Project structure
+
+- `index.html` — Vite entry page and document metadata.
+- `src/main.jsx` — React application bootstrap and global stylesheet import.
+- `src/App.jsx` — application shell and workflow navigation.
+- `src/components/Student/` — onboarding and tutoring screens.
+- `src/components/Admin/` — content-ingestion and analytics screens.
+- `src/mockApi.js` — local demo data and the server-side tutor API client.
+- `src/index.css` — global Tailwind setup and application styles.
+
+## Prototype limits
+
+- Onboarding advances through the same placeholder puzzle repeatedly. Answers are not saved or scored; the displayed profile is fixed sample data.
+- Content ingestion only demonstrates file selection. Files are not uploaded, read, or indexed.
+- Analytics values are illustrative sample data, not observations about real learners.
+- Tutoring sends `POST /api/tutor` on the same origin with `{ "query": string, "learnerState": object | null }`. No backend is included. The endpoint must return JSON with a non-empty string `text` field and a string-array `citations` field. Provider credentials belong on that server, never in this browser bundle.
+- Voice input, speech output, curriculum retrieval, verification, and learner-data persistence are not implemented.
+
+Do not enter real student data or use the displayed profile, analytics, or tutoring interface for educational, clinical, placement, or other high-stakes decisions.
