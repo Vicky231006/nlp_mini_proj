@@ -21,6 +21,8 @@ Start the Vite UI and API server together:
 npm run dev
 ```
 
+Or launch with the platform script: `./startup.sh` on macOS/Linux, or `.\startup.ps1` in PowerShell on Windows. These scripts start the web UI and API together; when the configured provider is the local Ollama endpoint, they also start Ollama if it is not already running. They do not download model files; pull a missing model with `ollama pull <model-name>`.
+
 Open the URL printed by Vite. The API runs locally on port 3001 and is proxied by Vite. Check the implementation with:
 
 ```sh
