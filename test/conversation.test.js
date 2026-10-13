@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { validateConversation } from '../server/conversation.js';
 import { createChatService } from '../server/chatService.js';
+import { ASSESSMENT_DIMENSIONS } from '../shared/assessment.js';
 
 test('validates and trims a complete multi-turn conversation', () => {
   assert.deepEqual(validateConversation([
@@ -43,6 +44,37 @@ test('chains conversation messages, adds retrieved evidence, and returns its cit
         url: 'https://example.org/lesson'
       }];
     }
+  });
+
+  test('uses all four raw practice counts only as gentle explanation guidance', async () => {
+    let systemInstruction;
+    const service = createChatService({
+      provider: {
+        async generate(input) {
+          systemInstruction = input.systemInstruction;
+          return 'Let us work through it together.';
+        }
+      },
+      async retrieve() { return []; }
+    });
+    const dimensions = Object.fromEntries(ASSESSMENT_DIMENSIONS.map(({ key }, index) => [
+      key,
+      { correct: index + 1, total: 6 }
+    ]));
+
+    await service.reply(
+      [{ role: 'user', content: 'Can you help me with this?' }],
+      { overall: { correct: 10, total: 25, answered: 15 }, dimensions }
+    );
+
+    for (const { label } of ASSESSMENT_DIMENSIONS) {
+      assert.match(systemInstruction, new RegExp(label));
+    }
+    assert.match(systemInstruction, /Pattern & Alternation: 1\/6/);
+    assert.match(systemInstruction, /Multi-Rule Integration: 4\/6/);
+    assert.match(systemInstruction, /not validated skill ratings/);
+    assert.match(systemInstruction, /Never label, rank, shame, diagnose/);
+    assert.match(systemInstruction, /Do not mention assessment scores unless the learner directly asks/);
   });
 
   const result = await service.reply([

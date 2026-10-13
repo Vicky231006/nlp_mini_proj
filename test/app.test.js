@@ -56,6 +56,36 @@ test('chat API refuses to pretend Gemini is configured when no key is present', 
       }
     }
   });
+
+  test('chat API rejects malformed learner practice profiles', async (context) => {
+    const app = createApp({
+      config: {
+        provider: 'openai-compatible',
+        openAICompatible: {},
+        production: false
+      },
+      provider: {
+        async generate() {
+          throw new Error('Model should not run for an invalid profile.');
+        }
+      }
+    });
+    const server = createServer(app);
+    await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+    context.after(() => new Promise((resolve, reject) =>
+      server.close((error) => error ? reject(error) : resolve())));
+
+    const response = await fetch(`http://127.0.0.1:${server.address().port}/api/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: [{ role: 'user', content: 'Hello' }],
+        assessmentProfile: { overall: {}, dimensions: {} }
+      })
+    });
+    assert.equal(response.status, 400);
+    assert.match((await response.json()).error, /assessment profile/);
+  });
   const server = createServer(app);
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
   context.after(() => new Promise((resolve, reject) =>

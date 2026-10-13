@@ -1,6 +1,7 @@
 import express from 'express';
 import { createChatService } from './chatService.js';
 import { validateConversation } from './conversation.js';
+import { validateAssessmentProfile } from '../shared/assessment.js';
 import { retrieveContext } from './retriever.js';
 import { createGeminiProvider } from './providers/gemini.js';
 import { createOpenAICompatibleProvider } from './providers/openAICompatible.js';
@@ -34,11 +35,12 @@ export function createApp({ config, provider = createProvider(config), retrieve 
   app.post('/api/chat', async (request, response) => {
     try {
       const messages = validateConversation(request.body?.messages);
+      const assessmentProfile = validateAssessmentProfile(request.body?.assessmentProfile);
       if (config.provider === 'gemini' && config.gemini.apiKeys.length === 0) {
         response.status(503).json({ error: 'Gemini is not configured. Add a Gemini API key to your local .env file.' });
         return;
       }
-      const result = await chatService.reply(messages);
+      const result = await chatService.reply(messages, assessmentProfile);
       response.json(result);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
@@ -47,7 +49,8 @@ export function createApp({ config, provider = createProvider(config), retrieve 
         : undefined;
       const isInputError = message.startsWith('Send between ')
         || message.startsWith('Each message ')
-        || message.startsWith('The latest conversation ');
+        || message.startsWith('The latest conversation ')
+        || message.startsWith('The learner assessment profile ');
       const status = isInputError ? 400 : 502;
       response.status(status).json({
         error: status === 400

@@ -1,13 +1,35 @@
 import { validateConversation } from './conversation.js';
+import { ASSESSMENT_DIMENSIONS } from '../shared/assessment.js';
 
 const BASE_INSTRUCTIONS = [
-  'You are a helpful, clear curriculum tutor.',
+  'You are a warm, patient study buddy helping a child learn.',
+  'Use clear, age-appropriate language, short steps, and encouraging feedback.',
   'Answer the learner’s latest question using the full conversation for context.',
-  'Do not claim to have accessed a textbook, curriculum, or source unless that evidence is supplied below.',
+  'Do not claim to have accessed a textbook, course material, or source unless that evidence is supplied below.',
   'When supplied evidence is relevant, ground the answer in it and refer to its source as [1], [2], and so on.',
   'If evidence is missing or insufficient, say so plainly and answer only from general knowledge.',
-  'Never invent quotations, page numbers, citations, learner records, or capabilities.'
+  'Never invent quotations, page numbers, citations, learner records, or capabilities.',
+  'Never label, rank, shame, diagnose, or infer intelligence, grade level, or learning needs from a learner’s practice results.',
+  'Do not mention assessment scores unless the learner directly asks about them.'
 ].join(' ');
+
+function formatAssessmentProfile(profile) {
+  if (!profile) return '';
+
+  const categoryScores = ASSESSMENT_DIMENSIONS.map(({ key, label, guidance }) => {
+    const { correct, total } = profile.dimensions[key];
+    return `${label}: ${correct}/${total} (${guidance})`;
+  }).join('; ');
+
+  return [
+    '',
+    '',
+    'Learner practice snapshot (use only to choose supportive explanations; these are raw counts from one low-stakes practice set, not validated skill ratings):',
+    `Overall: ${profile.overall.correct}/${profile.overall.total} correct, ${profile.overall.answered} answered, ${profile.overall.total - profile.overall.answered} skipped.`,
+    `Counts by designer-assigned puzzle category: ${categoryScores}.`,
+    'There are only 6 or 7 puzzles in each category. Do not treat differences as stable strengths or weaknesses. If relevant to the learner’s question, offer a gentle step-by-step explanation or optional practice in the related puzzle style. Do not override what the learner asks for or use these counts to make claims about them.'
+  ].join(' ');
+}
 
 function formatEvidence(documents) {
   if (!documents.length) {
@@ -29,7 +51,7 @@ function toCitation(document) {
 
 export function createChatService({ provider, retrieve = retrieveContext }) {
   return {
-    async reply(input) {
+    async reply(input, assessmentProfile = null) {
       let messages = validateConversation(input);
       while (messages[0]?.role === 'assistant') {
         messages = messages.slice(1);
@@ -85,7 +107,9 @@ export function createChatService({ provider, retrieve = retrieveContext }) {
 
       const text = await provider.generate({
         messages,
-        systemInstruction: BASE_INSTRUCTIONS + formatEvidence(safeDocuments)
+        systemInstruction: BASE_INSTRUCTIONS
+          + formatEvidence(safeDocuments)
+          + formatAssessmentProfile(assessmentProfile)
       });
 
       if (typeof text !== 'string' || !text.trim()) {

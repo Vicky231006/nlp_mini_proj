@@ -6,11 +6,11 @@ export async function getChatHealth() {
   return response.json();
 }
 
-export async function sendStudentQuery(messages) {
+export async function sendStudentQuery(messages, assessmentProfile = null) {
   const response = await fetch('/api/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages })
+    body: JSON.stringify({ messages, assessmentProfile })
   });
 
   const payload = await response.json().catch(() => null);

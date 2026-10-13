@@ -1,58 +1,42 @@
-// src/App.jsx
 import React, { useState } from 'react';
-import ContentIngestion from './components/Admin/ContentIngestion';
-import OnboardingWorkflow from './components/Student/OnboardingWorkflow';
+import ReasoningPractice from './components/Student/ReasoningPractice';
 import TutoringSession from './components/Student/TutoringSession';
-import AnalyticsDashboard from './components/Admin/AnalyticsDashboard';
 
 const tabs = [
-  { id: 'ingest', label: '📜 Curriculum Intake', role: 'Admin' },
-  { id: 'onboard', label: '🏅 Trainer Onboarding', role: 'Student' },
-  { id: 'tutor', label: '⚙️ Tutoring Pipeline', role: 'Student' },
-  { id: 'analytics', label: '📊 Analytics Hub', role: 'Admin' },
+  { id: 'practice', label: '🧩 Puzzle practice' },
+  { id: 'tutor', label: '💬 Chat with a tutor' }
 ];
 
 function App() {
-  const [activeTab, setActiveTab] = useState('onboard');
-
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'ingest': return <ContentIngestion />;
-      case 'onboard': return <OnboardingWorkflow />;
-      case 'tutor': return <TutoringSession />;
-      case 'analytics': return <AnalyticsDashboard />;
-      default: return <div>Select a station.</div>;
-    }
-  };
+  const [activeTab, setActiveTab] = useState('practice');
 
   return (
-    <div className="min-h-screen bg-slate-200 text-slate-900 p-2 md:p-6">
-      {/* Handheld Device Outer Frame */}
-      <div className="max-w-7xl mx-auto pixel-box bg-slate-100 p-4 md:p-6 space-y-6">
-        
-        {/* Retro Header Bar */}
-        <header className="bg-red-500 text-white rounded-2xl p-4 border-4 border-slate-900 shadow-[4px_4px_0px_#0f172a] flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center space-x-3">
-            {/* Capture Orb Symbol */}
-            <div className="w-10 h-10 rounded-full border-4 border-slate-900 bg-white flex flex-col justify-between overflow-hidden shadow-sm relative">
-              <div className="h-1/2 bg-red-600 border-b-2 border-slate-900" />
-              <div className="absolute inset-0 m-auto w-4 h-4 bg-white border-2 border-slate-900 rounded-full z-10" />
+    <div className="min-h-screen bg-gradient-to-br from-sky-100 via-indigo-50 to-violet-100 px-3 py-5 text-slate-900 sm:px-6 sm:py-8">
+      <div className="mx-auto max-w-7xl">
+        <header className="mb-6 flex flex-col gap-5 rounded-3xl border border-white/80 bg-white/90 p-5 shadow-lg shadow-indigo-100 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+          <div className="flex items-center gap-3">
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-100 text-3xl" aria-hidden="true">
+              🧩
+            </span>
+            <div>
+              <h1 className="text-2xl font-black tracking-tight text-indigo-950 sm:text-3xl">
+                Bright Steps
+              </h1>
+              <p className="text-sm font-medium text-slate-600">Puzzles, practice, and a helpful tutor</p>
             </div>
-            <h1 className="text-2xl md:text-3xl font-black tracking-wide text-amber-300 drop-shadow-[2px_2px_0px_#0f172a]">
-              Curriculum Quest Tutor
-            </h1>
           </div>
 
-          {/* Navigation Badges */}
-          <nav className="flex space-x-2 overflow-x-auto w-full md:w-auto pb-1">
-            {tabs.map(tab => (
+          <nav aria-label="Main navigation" className="flex flex-wrap gap-2">
+            {tabs.map((tab) => (
               <button
                 key={tab.id}
+                type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-4 py-2 rounded-xl text-sm font-bold border-2 border-slate-900 transition-all whitespace-nowrap ${
+                aria-current={activeTab === tab.id ? 'page' : undefined}
+                className={`rounded-xl px-4 py-2.5 text-sm font-bold transition focus-visible:outline focus-visible:outline-4 focus-visible:outline-amber-400 ${
                   activeTab === tab.id
-                    ? 'bg-amber-300 text-slate-900 shadow-[2px_2px_0px_#0f172a] -translate-y-0.5'
-                    : 'bg-white text-slate-700 hover:bg-slate-100'
+                    ? 'bg-indigo-700 text-white shadow-sm'
+                    : 'bg-indigo-50 text-indigo-950 hover:bg-indigo-100'
                 }`}
               >
                 {tab.label}
@@ -61,10 +45,17 @@ function App() {
           </nav>
         </header>
 
-        {/* Dynamic View Panel */}
-        <main className="bg-amber-50 rounded-2xl border-4 border-slate-900 p-4 md:p-8 min-h-[500px]">
-          {renderContent()}
+        <main className="min-h-[65vh] rounded-3xl border border-white/80 bg-white/80 p-4 shadow-lg shadow-indigo-100 sm:p-7">
+          {activeTab === 'practice'
+            ? <ReasoningPractice onOpenTutor={() => setActiveTab('tutor')} />
+            : <TutoringSession />}
         </main>
+
+        <footer className="mx-auto mt-5 max-w-3xl text-center text-xs leading-relaxed text-slate-600">
+          Practice scores are simple counts from today’s puzzles, not a measure of intelligence or a
+          decision about what you can learn. Your history and results are saved in this browser;
+          messages and your puzzle snapshot are shared with the AI tutor when you chat.
+        </footer>
       </div>
     </div>
   );

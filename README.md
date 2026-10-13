@@ -1,6 +1,6 @@
-# NC Tutoring Prototype
+# Bright Steps
 
-A browser-based tutoring workflow with a persistent chat UI, a server-side Gemini integration, a swappable OpenAI-compatible model provider, and a retriever interface for adding RAG.
+A child-friendly visual puzzle practice and tutoring app, with persistent chat history, Gemini and Ollama model support, and an extension point for adding RAG.
 
 ## Requirements
 
@@ -76,6 +76,13 @@ LOCAL_MODEL_API_KEY=
 
 The server never sends a Gemini key to the browser. Local-provider credentials, if any, are also read only by the server. Both providers receive the same conversation history and retrieved-context instructions.
 
+## Puzzle practice and score interpretation
+
+- The practice flow uses the original 64 visual puzzle items from commit `9ce1d50e080809516f1ae3e09fcb85511eaa85eb`. Each session randomly selects 25 different puzzles, covering all four designer-assigned categories: Pattern & Alternation, Spatial Transformation, Analogical Mapping, and Multi-Rule Integration.
+- Each correct answer counts as one point. The results show the total correct out of 25, answered and skipped counts, and correct counts out of the 6 or 7 sampled puzzles in each category.
+- The category labels and counts are descriptive design groupings, not validated or stable measurements of a child's abilities. Results must not be used to rank, diagnose, determine grade standing, or make educational decisions. The tutor receives the raw counts only to choose supportive explanations and must not infer intelligence or label the learner.
+- The assessment profile is saved in this browser and sent with tutoring requests. It is not uploaded to an app database. Chat content is sent to the selected model provider as described below.
+
 ## Conversation and RAG architecture
 
 - The chat UI stores up to 50 conversations in browser `localStorage`, with up to 100 displayed turns per conversation. History is local to that browser and is not synchronized between devices.
@@ -86,6 +93,4 @@ The server never sends a Gemini key to the browser. Local-provider credentials, 
 
 The retriever is intentionally not a fake knowledge base: until it is connected, the tutor is instructed not to claim that its answer is grounded in textbooks or other sources. Keep provider and vector-store credentials server-side. Chat content is sent to the selected model provider; use only data you are authorized to send.
 
-## Current demo screens
-
-Onboarding, content ingestion, and analytics are frontend demonstrations with example data. The repeated puzzle does not assess or score a learner, file selection does not upload or process content, and sample analytics are not real learner records. Do not enter sensitive personal information or use these demo screens for educational, clinical, placement, or other high-stakes decisions.
+The navigation focuses on puzzle practice and tutoring. The retriever is intentionally not a fake knowledge base: until it is connected, the tutor is instructed not to claim that its answer is grounded in textbooks or other sources.

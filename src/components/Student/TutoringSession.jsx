@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { getChatHealth, sendStudentQuery } from '../../chatApi';
+import { loadAssessmentProfile } from '../../assessment/profileStorage';
 
 const CHAT_STORAGE_KEY = 'nc-tutoring-chat-history-v1';
 const MAX_SAVED_CHATS = 50;
@@ -72,27 +73,6 @@ function loadChatHistory() {
   return { chats: [chat], activeChatId: chat.id, storageUnavailable: false };
 }
 
-function PipelineStatus() {
-  const pipelineSteps = [
-    'Conversation history',
-    'Knowledge retrieval (RAG hook)',
-    'Gemini or local model',
-    'Grounded answer + sources'
-  ];
-
-  return (
-    <div className="p-4 bg-slate-900 text-amber-300 border-4 border-slate-900 rounded-2xl font-mono text-xs space-y-2 shadow-[4px_4px_0px_#0f172a]">
-      <h6 className="font-black text-white border-b border-amber-400 pb-1 mb-2">Chat pipeline</h6>
-      {pipelineSteps.map((step, index) => (
-        <div key={step} className="flex items-center space-x-2 text-slate-300">
-          <span className="w-4 text-right text-amber-400 font-bold">{index + 1}.</span>
-          <span className="truncate">{step}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 function QueryInput({ onSend, isLoading }) {
   const [inputText, setInputText] = useState('');
 
@@ -105,7 +85,7 @@ function QueryInput({ onSend, isLoading }) {
   };
 
   return (
-    <div className="bg-white p-4 rounded-b-2xl border-t-4 border-slate-900 space-y-3 shadow-inner">
+    <div className="space-y-3 border-t border-slate-200 bg-white p-4">
       <div className="flex items-center space-x-2">
         <input
           type="text"
@@ -115,21 +95,21 @@ function QueryInput({ onSend, isLoading }) {
           onKeyDown={(event) => {
             if (event.key === 'Enter') handleSend();
           }}
-          placeholder="Ask a question or follow up on this chat..."
+          placeholder="What would you like help learning?"
           disabled={isLoading}
-          className="flex-grow p-3 bg-slate-50 rounded-xl text-sm font-bold border-2 border-slate-900 focus:ring-2 focus:ring-amber-400 outline-none"
+          className="min-w-0 flex-grow rounded-xl border border-slate-300 bg-slate-50 p-3 text-sm font-semibold outline-none focus:ring-2 focus:ring-indigo-400"
         />
         <button
           type="button"
           onClick={handleSend}
           disabled={isLoading || !inputText.trim()}
-          className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-black rounded-xl border-2 border-slate-900 shadow-[3px_3px_0px_#0f172a] disabled:bg-slate-300 transition-all active:shadow-none"
+          className="rounded-xl bg-indigo-700 px-6 py-3 font-black text-white transition hover:bg-indigo-800 disabled:bg-slate-300"
         >
           Send
         </button>
       </div>
       <p className="text-xs font-bold text-slate-500">
-        Chat history is saved in this browser. Do not enter sensitive personal information.
+        When you chat, your message and puzzle snapshot go to the AI tutor to make a reply. Please do not share private information.
       </p>
     </div>
   );
@@ -143,6 +123,7 @@ const TutoringSession = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [serviceStatus, setServiceStatus] = useState('ready');
   const [providerName, setProviderName] = useState('Gemini');
+  const [assessmentState] = useState(loadAssessmentProfile);
   const messagesEndRef = useRef(null);
   const { chats, activeChatId } = chatState;
   const activeChat = chats.find((chat) => chat.id === activeChatId) || chats[0];
@@ -242,7 +223,7 @@ const TutoringSession = () => {
     try {
       const contextMessages = nextMessages.slice(-MAX_CONTEXT_MESSAGES);
       if (contextMessages[0]?.role === 'assistant') contextMessages.shift();
-      const result = await sendStudentQuery(contextMessages);
+      const result = await sendStudentQuery(contextMessages, assessmentState.profile);
       setServiceStatus('connected');
       updateChat(chatId, (chat) => ({
         ...chat,
@@ -264,14 +245,14 @@ const TutoringSession = () => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 min-h-[calc(100vh-180px)]">
-      <aside className="lg:col-span-1 bg-white border-4 border-slate-900 rounded-2xl shadow-[4px_4px_0px_#0f172a] p-4 flex flex-col gap-3">
+      <aside className="lg:col-span-1 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
         <div className="flex items-center justify-between gap-2">
-          <h3 className="font-black text-slate-900">Chat history</h3>
+          <h3 className="font-black text-slate-900">Your chats</h3>
           <button
             type="button"
             onClick={createNewChat}
             disabled={isLoading}
-            className="rounded-lg border-2 border-slate-900 bg-amber-300 px-3 py-2 text-sm font-black disabled:opacity-50"
+            className="rounded-lg bg-indigo-100 px-3 py-2 text-sm font-black text-indigo-900 hover:bg-indigo-200 disabled:opacity-50"
           >
             New chat
           </button>
@@ -313,33 +294,38 @@ const TutoringSession = () => {
         </ul>
       </aside>
 
-      <section className="lg:col-span-2 flex min-h-[70vh] flex-col bg-white border-4 border-slate-900 rounded-2xl shadow-[4px_4px_0px_#0f172a] overflow-hidden">
-        <div className="bg-red-500 text-white px-6 py-3 border-b-4 border-slate-900 flex items-center justify-between gap-3">
-          <h3 className="font-black text-base text-amber-200 tracking-wide">💬 {activeChat?.title || 'Tutoring chat'}</h3>
+      <section className="lg:col-span-2 flex min-h-[70vh] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="flex items-center justify-between gap-3 border-b border-slate-200 bg-indigo-700 px-5 py-4 text-white">
+          <h3 className="font-black text-base tracking-wide">💬 {activeChat?.title || 'Tutoring chat'}</h3>
           <span className="text-xs font-bold bg-white/20 px-3 py-1 rounded-full border border-white/40" aria-live="polite">
             {serviceStatus === 'connecting'
-              ? 'Connecting…'
+            ? 'Thinking…'
               : serviceStatus === 'connected'
                 ? 'Connected'
                 : serviceStatus === 'unconfigured'
-                  ? 'Add server API key'
+                  ? 'Tutor needs setup'
                 : serviceStatus === 'unavailable'
                   ? 'Service unavailable'
                   : `${providerName} ready`}
           </span>
         </div>
 
-        <div className="flex-grow p-6 overflow-y-auto space-y-4 bg-amber-50/50" aria-live="polite">
+        <div className="flex-grow space-y-4 overflow-y-auto bg-sky-50/50 p-5" aria-live="polite">
+          {assessmentState.warning && (
+            <p role="status" className="rounded-xl bg-amber-50 p-3 text-xs text-amber-950">
+              {assessmentState.warning}
+            </p>
+          )}
           {messages.length === 0 ? (
-            <p className="rounded-xl border-2 border-dashed border-slate-300 bg-white p-5 text-sm text-slate-700">
-              Ask a question to start this chat. Follow-up questions share this conversation’s context.
+            <p className="rounded-xl border border-indigo-100 bg-white p-5 text-sm text-slate-700">
+              Hi! Ask me about something you are learning, or ask for another example. We can work it out together.
             </p>
           ) : messages.map((message, index) => (
             <div key={`${index}-${message.role}`} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`p-4 rounded-2xl max-w-[90%] border-2 border-slate-900 space-y-2 shadow-[3px_3px_0px_#0f172a] ${
+              <div className={`max-w-[90%] space-y-2 rounded-2xl p-4 ${
                 message.role === 'user'
-                  ? 'bg-blue-500 text-white rounded-br-none font-bold'
-                  : 'bg-white text-slate-800 rounded-bl-none font-medium'
+                  ? 'rounded-br-sm bg-indigo-700 font-bold text-white'
+                  : 'rounded-bl-sm border border-slate-200 bg-white font-medium text-slate-800 shadow-sm'
               }`}>
                 <p className="leading-relaxed whitespace-pre-wrap">{message.content}</p>
                 {message.role === 'assistant' && message.citations?.length > 0 && (
@@ -369,15 +355,15 @@ const TutoringSession = () => {
           ))}
 
           {chatError?.chatId === activeChat?.id && (
-            <p role="alert" className="rounded-xl border-2 border-red-300 bg-red-100 p-4 text-sm font-bold text-red-900">
+            <p role="alert" className="rounded-xl border border-red-300 bg-red-100 p-4 text-sm font-bold text-red-900">
               Chat request failed: {chatError.message} Your question is saved here; try sending it again.
             </p>
           )}
 
           {isLoading && (
             <div className="flex justify-start">
-              <p className="bg-white p-4 rounded-2xl border-2 border-slate-900 shadow-[3px_3px_0px_#0f172a] animate-pulse text-slate-600 font-bold text-sm">
-                Thinking…
+              <p className="animate-pulse rounded-2xl border border-slate-200 bg-white p-4 text-sm font-bold text-slate-600 shadow-sm">
+                Thinking it through…
               </p>
             </div>
           )}
@@ -387,12 +373,19 @@ const TutoringSession = () => {
         <QueryInput onSend={handleSendQuery} isLoading={isLoading} />
       </section>
 
-      <aside className="lg:col-span-1 flex flex-col space-y-4">
-        <PipelineStatus />
-        <div className="bg-emerald-100 border-4 border-slate-900 rounded-2xl p-4 shadow-[4px_4px_0px_#0f172a] space-y-2">
-          <h4 className="font-black text-slate-900 text-sm">Provider and RAG</h4>
-          <p className="text-xs font-bold text-slate-700">
-            Choose Gemini or an OpenAI-compatible local model in server settings. Add a retriever in <code>server/retriever.js</code> to supply documents and citations.
+      <aside className="lg:col-span-1 flex flex-col gap-4">
+        <div className="space-y-2 rounded-2xl border border-sky-100 bg-sky-50 p-4">
+          <h4 className="font-black text-slate-900">A little tip</h4>
+          <p className="text-sm leading-relaxed text-slate-700">
+            You can ask me to explain something in smaller steps, give an example, or help with a puzzle.
+          </p>
+        </div>
+        <div className="space-y-2 rounded-2xl border border-indigo-100 bg-indigo-50 p-4">
+          <h4 className="font-black text-slate-900">Made for your learning</h4>
+          <p className="text-sm leading-relaxed text-slate-700">
+            {assessmentState.profile
+              ? 'Your recent puzzle practice helps me choose a gentle explanation style. You can always tell me what works best for you.'
+              : 'Try Puzzle practice if you would like the tutor to use a little snapshot from your puzzles to shape its explanations.'}
           </p>
         </div>
       </aside>
