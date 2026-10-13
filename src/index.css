@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+@layer utilities {
+  /* Retro Game Boy / Handheld Device Borders */
+  .pixel-box {
+    background-color: #ffffff;
+    border: 3px solid #1e293b;
+    border-radius: 1rem;
+    box-shadow: 4px 4px 0px #0f172a;
+  }
+
+  .pixel-card {
+    border: 2px solid #334155;
+    border-radius: 0.75rem;
+    box-shadow: 3px 3px 0px #1e293b;
+  }
+
+  /* Custom Game Boy Color Palette Accents */
+  .bg-trainer-red { background-color: #ef4444; }
+  .bg-trainer-blue { background-color: #3b82f6; }
+  .bg-trainer-yellow { background-color: #eab308; }
+  .bg-trainer-green { background-color: #22c55e; }
+}
+
+/* Custom retro font fallbacks */
+body {
+  font-family: 'Trebuchet MS', 'Segoe UI', system-ui, sans-serif;
+  background-color: #e2e8f0;
+}
