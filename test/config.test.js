@@ -27,6 +27,26 @@ test('selects an OpenAI-compatible local model from environment settings', (cont
   assert.equal(config.openAICompatible.model, 'test-local-model');
 });
 
+test('defaults the local model to Qwen2.5 1.5B Instruct', (context) => {
+  const previous = {
+    CHAT_PROVIDER: process.env.CHAT_PROVIDER,
+    LOCAL_MODEL_NAME: process.env.LOCAL_MODEL_NAME
+  };
+  context.after(() => {
+    for (const [key, value] of Object.entries(previous)) {
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    }
+  });
+
+  delete process.env.CHAT_PROVIDER;
+  delete process.env.LOCAL_MODEL_NAME;
+
+  const config = getServerConfig();
+  assert.equal(config.provider, 'gemini');
+  assert.equal(config.openAICompatible.model, 'qwen2.5:1.5b');
+});
+
 test('does not treat the example API key value as a configured Gemini credential', (context) => {
   const previous = {
     CHAT_PROVIDER: process.env.CHAT_PROVIDER,

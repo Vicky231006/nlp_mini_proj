@@ -55,7 +55,7 @@ export function getServerConfig() {
     },
     openAICompatible: {
       baseUrl: getOpenAICompatibleBaseUrl(),
-      model: process.env.LOCAL_MODEL_NAME || 'llama3.2',
+      model: process.env.LOCAL_MODEL_NAME || 'qwen2.5:1.5b',
       apiKey: process.env.LOCAL_MODEL_API_KEY || ''
     }
   };

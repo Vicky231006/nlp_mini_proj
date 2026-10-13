@@ -5,7 +5,7 @@ A browser-based tutoring workflow with a persistent chat UI, a server-side Gemin
 ## Requirements
 
 - Node.js 22 or newer
-- A Gemini API key for the Gemini provider, or an OpenAI-compatible local model server (for example, Ollama with its OpenAI-compatible endpoint)
+- A Gemini API key for the Gemini provider, or Ollama for local inference
 
 ## Run locally
 
@@ -13,7 +13,7 @@ A browser-based tutoring workflow with a persistent chat UI, a server-side Gemin
 npm ci
 ```
 
-Copy `.env.example` to `.env`, then set `GEMINI_API_KEY` to a key from Google AI Studio. `.env` is git-ignored. The current local setup also accepts the existing `api_key1`, `api_key2`, and `api_key3` variables, and will try each Gemini key in order if a request is rejected or rate-limited.
+Copy `.env.example` to `.env`, then set `GEMINI_API_KEY` to a key from Google AI Studio, or follow the Ollama setup below to use a local model. `.env` is git-ignored. The current local setup also accepts the existing `api_key1`, `api_key2`, and `api_key3` variables, and will try each Gemini key in order if a request is rejected or rate-limited.
 
 Start the Vite UI and API server together:
 
@@ -50,12 +50,27 @@ GEMINI_MODEL=gemini-3.1-flash-lite
 
 For key fallback, use a comma-separated `GEMINI_API_KEYS` instead of `GEMINI_API_KEY`.
 
-To connect a local server that implements the OpenAI chat-completions API:
+To use Qwen2.5-1.5B-Instruct locally with Ollama, install Ollama, download the model, and select it in `.env`:
+
+```powershell
+ollama pull qwen2.5:1.5b
+```
 
 ```dotenv
 CHAT_PROVIDER=openai-compatible
 LOCAL_MODEL_BASE_URL=http://127.0.0.1:11434/v1
-LOCAL_MODEL_NAME=llama3.2
+LOCAL_MODEL_NAME=qwen2.5:1.5b
+LOCAL_MODEL_API_KEY=
+```
+
+Ollama must be running before you send a chat message. Its OpenAI-compatible chat-completions endpoint is used, so the same conversation history and retrieved-context instructions are passed to the model.
+
+To connect a different local server that implements the OpenAI chat-completions API:
+
+```dotenv
+CHAT_PROVIDER=openai-compatible
+LOCAL_MODEL_BASE_URL=http://127.0.0.1:11434/v1
+LOCAL_MODEL_NAME=your-installed-model
 LOCAL_MODEL_API_KEY=
 ```
 
