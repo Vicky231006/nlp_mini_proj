@@ -139,7 +139,15 @@ export function createApp({
     response.json({
       status: 'ok',
       provider: config.provider,
-      configured: config.provider === 'gemini' ? config.gemini.apiKeys.length > 0 : true
+      configured: config.provider === 'gemini' ? config.gemini.apiKeys.length > 0 : true,
+      retrieval: config.retrieval
+        ? {
+          enabled: config.retrieval.enabled,
+          baseUrl: config.retrieval.baseUrl,
+          topK: config.retrieval.topK,
+          minScore: config.retrieval.minScore
+        }
+        : { enabled: false }
     });
   });
 
@@ -276,6 +284,20 @@ export function createApp({
       return;
     }
     response.status(204).end();
+  });
+
+  app.patch('/api/chats/:id', authenticate, requireCsrf, requireAssessment, (request, response) => {
+    const title = typeof request.body?.title === 'string' ? request.body.title.trim() : '';
+    if (!title || title.length > 100) {
+      response.status(400).json({ error: 'Give the chat a title between 1 and 100 characters.' });
+      return;
+    }
+    const renamed = accounts.renameConversation(request.account.user.id, request.params.id, title);
+    if (!renamed) {
+      response.status(404).json({ error: 'That conversation was not found.' });
+      return;
+    }
+    response.json(renamed);
   });
 
   app.post('/api/chat', authenticate, requireCsrf, requireAssessment, async (request, response) => {

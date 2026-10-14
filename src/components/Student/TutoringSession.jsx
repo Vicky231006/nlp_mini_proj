@@ -3,6 +3,7 @@ import {
   deleteConversation,
   getChatHealth,
   loadConversations,
+  renameConversation,
   sendStudentQuery
 } from '../../accountApi';
 
@@ -69,7 +70,11 @@ const TutoringSession = () => {
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
   const [serviceStatus, setServiceStatus] = useState('ready');
   const [providerName, setProviderName] = useState('Gemini');
-  const messagesEndRef = useRef(null);
+  const [editingChatId, setEditingChatId] = useState(null);
+  const [draftTitle, setDraftTitle] = useState('');
+  const [isRenaming, setIsRenaming] = useState(false);
+  const messagesContainerRef = useRef(null);
+  const renameGuardRef = useRef(false);
   const activeChat = chats.find((chat) => chat.id === activeChatId);
   const messages = activeChat?.messages || [];
 
@@ -79,7 +84,12 @@ const TutoringSession = () => {
       .then((history) => {
         if (!isCurrent) return;
         const savedChats = history.chats || [];
-        const availableChats = savedChats.length ? savedChats : [createDraft()];
+        // Chats loaded from the server are persisted by definition. Without
+        // this stamp, sending after a refresh omits the conversation id and
+        // the server starts a brand-new chat for every message.
+        const availableChats = savedChats.length
+          ? savedChats.map((chat) => ({ ...chat, persistedId: chat.id }))
+          : [createDraft()];
         setChats(availableChats);
         setActiveChatId(availableChats[0].id);
       })
@@ -108,7 +118,10 @@ const TutoringSession = () => {
   }, []);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const container = messagesContainerRef.current;
+    if (container) {
+      container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+    }
   }, [activeChat?.id, activeChat?.messages.length, chatError, isLoading]);
 
   const createNewChat = () => {
@@ -117,6 +130,51 @@ const TutoringSession = () => {
     setChats((current) => [chat, ...current]);
     setActiveChatId(chat.id);
     setChatError(null);
+    setEditingChatId(null);
+  };
+
+  const startRename = (chat) => {
+    if (isLoading || isRenaming) return;
+    renameGuardRef.current = false;
+    setDraftTitle(chat.title);
+    setEditingChatId(chat.id);
+    setChatError(null);
+  };
+
+  const cancelRename = () => {
+    renameGuardRef.current = true;
+    setEditingChatId(null);
+  };
+
+  const commitRename = async (chat) => {
+    if (renameGuardRef.current) return;
+    renameGuardRef.current = true;
+    const nextTitle = draftTitle.trim();
+    if (!nextTitle || nextTitle === chat.title) {
+      setEditingChatId(null);
+      return;
+    }
+    // Drafts were never saved, so they rename locally only.
+    if (!chat.persistedId && chat.id.startsWith('draft-')) {
+      setChats((current) => current.map((entry) =>
+        entry.id === chat.id ? { ...entry, title: nextTitle } : entry));
+      setEditingChatId(null);
+      return;
+    }
+    setIsRenaming(true);
+    try {
+      const updated = await renameConversation(chat.persistedId || chat.id, nextTitle);
+      setChats((current) => current.map((entry) =>
+        entry.id === chat.id ? { ...entry, title: updated.title } : entry));
+      setEditingChatId(null);
+    } catch (error) {
+      setChatError({
+        message: error instanceof Error ? error.message : 'Could not rename that chat.'
+      });
+      renameGuardRef.current = false;
+    } finally {
+      setIsRenaming(false);
+    }
   };
 
   const removeChat = async (chat) => {
@@ -135,6 +193,7 @@ const TutoringSession = () => {
         setActiveChatId(draft.id);
       }
       setChatError(null);
+      setEditingChatId(null);
     } catch (error) {
       setChatError({
         message: error instanceof Error ? error.message : 'Could not delete that conversation.'
@@ -161,7 +220,11 @@ const TutoringSession = () => {
     try {
       const contextMessages = nextMessages.slice(-MAX_CONTEXT_MESSAGES);
       if (contextMessages[0]?.role === 'assistant') contextMessages.shift();
-      const result = await sendStudentQuery(activeChat.persistedId, contextMessages);
+      // Only true drafts (never sent) create a conversation; anything with a
+      // real id must keep appending to it.
+      const conversationId = activeChat.persistedId
+        || (activeChat.id.startsWith('draft-') ? null : activeChat.id);
+      const result = await sendStudentQuery(conversationId, contextMessages);
       setServiceStatus('connected');
       setChats((current) => current.map((chat) => chat.id === localChatId
         ? {
@@ -204,27 +267,49 @@ const TutoringSession = () => {
         </div>
         <p className="text-xs font-semibold text-slate-700">Saved to your account on this app.</p>
         {isLoadingHistory && <p className="text-sm font-bold text-slate-700">Loading your chats…</p>}
-        <ul className="flex flex-col gap-2 overflow-y-auto">
+        <ul className="flex max-h-56 min-h-0 flex-col gap-2 overflow-y-auto overscroll-y-contain lg:max-h-none lg:flex-1">
           {chats.map((chat) => (
             <li key={chat.id} className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => {
-                  setChatError(null);
-                  setActiveChatId(chat.id);
-                }}
-                disabled={isLoading}
-                aria-current={chat.id === activeChatId ? 'page' : undefined}
-                className={`min-w-0 flex-1 truncate rounded-lg border-2 border-slate-900 px-3 py-2 text-left text-sm font-bold ${
-                  chat.id === activeChatId ? 'bg-red-200' : 'bg-white'
-                }`}
-              >
-                {chat.title}
-              </button>
+              {editingChatId === chat.id ? (
+                <input
+                  autoFocus
+                  value={draftTitle}
+                  maxLength={100}
+                  disabled={isRenaming}
+                  onChange={(event) => setDraftTitle(event.target.value)}
+                  onFocus={(event) => event.target.select()}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter') commitRename(chat);
+                    else if (event.key === 'Escape') cancelRename();
+                  }}
+                  onBlur={() => commitRename(chat)}
+                  aria-label="Chat title"
+                  className="min-w-0 flex-1 rounded-lg border-2 border-slate-900 bg-white px-3 py-2 text-left text-sm font-bold"
+                />
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (chat.id === activeChatId) startRename(chat);
+                    else {
+                      setChatError(null);
+                      setActiveChatId(chat.id);
+                    }
+                  }}
+                  disabled={isLoading}
+                  title={chat.id === activeChatId ? 'Click to rename' : undefined}
+                  aria-current={chat.id === activeChatId ? 'page' : undefined}
+                  className={`min-w-0 flex-1 truncate rounded-lg border-2 border-slate-900 px-3 py-2 text-left text-sm font-bold ${
+                    chat.id === activeChatId ? 'bg-red-200' : 'bg-white'
+                  }`}
+                >
+                  {chat.title}
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => removeChat(chat)}
-                disabled={isLoading}
+                disabled={isLoading || editingChatId === chat.id}
                 aria-label={`Delete chat ${chat.title}`}
                 className="rounded-md border-2 border-transparent px-2 py-1 font-black text-slate-700 hover:border-slate-900 hover:bg-red-100 disabled:opacity-50"
               >
@@ -235,7 +320,7 @@ const TutoringSession = () => {
         </ul>
       </aside>
 
-      <section className="flex min-h-[70vh] flex-col overflow-hidden rounded-xl border-2 border-slate-900 bg-white shadow-[3px_3px_0px_#0f172a] lg:col-span-3">
+      <section className="flex h-[calc(100vh-220px)] min-h-[540px] flex-col overflow-hidden rounded-xl border-2 border-slate-900 bg-white shadow-[3px_3px_0px_#0f172a] lg:col-span-3">
         <div className="flex items-center justify-between gap-3 border-b-2 border-slate-900 bg-red-600 px-5 py-4 text-white">
           <h3 className="text-base font-black tracking-wide">💬 {activeChat?.title || 'Tutoring chat'}</h3>
           <span className="rounded-full border border-white/70 bg-white/15 px-3 py-1 text-xs font-bold" aria-live="polite">
@@ -251,7 +336,7 @@ const TutoringSession = () => {
           </span>
         </div>
 
-        <div className="flex-grow space-y-4 overflow-y-auto bg-sky-50/50 p-5" aria-live="polite">
+        <div ref={messagesContainerRef} className="min-h-0 flex-grow space-y-4 overflow-y-auto overscroll-y-contain bg-sky-50/50 p-5" aria-live="polite">
           {messages.length === 0 ? (
             <p className="rounded-xl border-2 border-slate-900 bg-white p-5 text-sm text-slate-700 shadow-[2px_2px_0px_#0f172a]">
               Hi! Ask me about something you are learning, or ask for another example. We can work it out together.
@@ -265,21 +350,26 @@ const TutoringSession = () => {
               }`}>
                 <p className="whitespace-pre-wrap leading-relaxed">{message.content}</p>
                 {message.role === 'assistant' && message.citations?.length > 0 && (
-                  <ul className="flex flex-wrap gap-2 border-t border-slate-200 pt-2 text-xs">
-                    {message.citations.map((citation, citationIndex) => (
-                      <li key={`${citation.title}-${citationIndex}`}>
-                        {citation.url ? (
-                          <a href={citation.url} target="_blank" rel="noreferrer" className="font-bold text-blue-700 underline">
-                            Source [{citationIndex + 1}]: {citation.title}
-                          </a>
-                        ) : (
-                          <span className="font-bold text-blue-700">
-                            Source [{citationIndex + 1}]: {citation.title}
-                          </span>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
+                  <details className="border-t border-slate-200 pt-2 text-xs">
+                    <summary className="cursor-pointer font-bold text-blue-700 hover:underline">
+                      📚 Sources ({message.citations.length}) — see what this answer was grounded in
+                    </summary>
+                    <ul className="mt-2 flex flex-col gap-1">
+                      {message.citations.map((citation, citationIndex) => (
+                        <li key={`${citation.title}-${citationIndex}`}>
+                          {citation.url ? (
+                            <a href={citation.url} target="_blank" rel="noreferrer" className="font-bold text-blue-700 underline">
+                              [{citationIndex + 1}] {citation.title}
+                            </a>
+                          ) : (
+                            <span className="font-bold text-blue-700">
+                              [{citationIndex + 1}] {citation.title}
+                            </span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
                 )}
               </div>
             </div>
@@ -297,7 +387,6 @@ const TutoringSession = () => {
               </p>
             </div>
           )}
-          <div ref={messagesEndRef} />
         </div>
         <QueryInput onSend={handleSendQuery} isLoading={isLoading} />
       </section>

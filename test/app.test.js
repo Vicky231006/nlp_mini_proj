@@ -31,7 +31,10 @@ test('health is public, but chat requires an authenticated, assessed learner', a
 
   const baseUrl = `http://127.0.0.1:${server.address().port}`;
   const health = await fetch(`${baseUrl}/api/health`);
-  assert.deepEqual(await health.json(), { status: 'ok', provider: 'gemini', configured: true });
+  const healthPayload = await health.json();
+  assert.equal(healthPayload.status, 'ok');
+  assert.equal(healthPayload.provider, 'gemini');
+  assert.equal(healthPayload.configured, true);
 
   const unauthorized = await fetch(`${baseUrl}/api/chat`, {
     method: 'POST',

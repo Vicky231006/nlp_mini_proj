@@ -1,0 +1,26 @@
+{
+  "experiment": "english_only_v1",
+  "corpus": "corpus_v2_clean",
+  "source_subset": "English-language NCERT source books only",
+  "chunking": "fixed_200_50",
+  "chunk_count": 2033,
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "embedding_dimension": 384,
+  "embedding_source": "Subset of frozen baseline embeddings; no recomputation",
+  "embedding_normalization": "L2 normalization",
+  "dense_index": "FAISS IndexFlatIP",
+  "dense_similarity": "cosine-equivalent inner product",
+  "bm25_tokenizer": "lowercase whitespace split",
+  "bm25_index": "BM25Okapi",
+  "hybrid": {
+    "method": "Reciprocal Rank Fusion",
+    "rrf_k": 60,
+    "candidate_k": 20,
+    "top_k": 5
+  },
+  "original_baseline_modified": false,
+  "original_corpus_modified": false,
+  "benchmark_modified": false,
+  "metadata_embedding_alignment_verified": true,
+  "all_retrieval_representations_aligned": true
+}

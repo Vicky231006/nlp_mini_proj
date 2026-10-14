@@ -79,6 +79,13 @@ export function deleteConversation(conversationId) {
   });
 }
 
+export function renameConversation(conversationId, title) {
+  return request(`/api/chats/${encodeURIComponent(conversationId)}`, {
+    method: 'PATCH',
+    body: { title }
+  });
+}
+
 export function sendStudentQuery(conversationId, messages) {
   return request('/api/chat', {
     method: 'POST',

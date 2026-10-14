@@ -214,3 +214,99 @@ test('accounts require assessment, save server-scored results, and keep chats pr
   assert.equal(restoredChats.payload.chats.length, 1);
   assert.equal(restoredChats.payload.chats[0].messages[1].content, 'Let us solve that together.');
 });
+
+test('follow-ups reuse the listed conversation id and titles can be renamed by their owner', async (context) => {
+  const database = createAccountDatabase(':memory:');
+  const app = createApp({
+    database,
+    config: {
+      provider: 'openai-compatible',
+      openAICompatible: {},
+      production: false
+    },
+    provider: {
+      async generate() {
+        return 'Hi there.';
+      }
+    },
+    retrieve: async () => []
+  });
+  const server = createServer(app);
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  context.after(() => {
+    database.close();
+    return new Promise((resolve, reject) =>
+      server.close((error) => error ? reject(error) : resolve()));
+  });
+
+  const baseUrl = `http://127.0.0.1:${server.address().port}`;
+  const user = await createUser(baseUrl, 'renamer@example.test');
+  await finishAssessment(baseUrl, user);
+
+  const first = await jsonRequest(baseUrl, '/api/chat', {
+    method: 'POST',
+    body: { conversationId: null, messages: [{ role: 'user', content: 'First question' }] },
+    ...user
+  });
+  assert.equal(first.response.status, 200);
+  const conversationId = first.payload.conversationId;
+
+  // Simulate a refreshed client: it only knows the server-provided id from
+  // GET /api/chats, and the follow-up must append instead of forking.
+  const listed = await jsonRequest(baseUrl, '/api/chats', user);
+  assert.equal(listed.payload.chats.length, 1);
+  const history = listed.payload.chats[0].messages.map(({ role, content }) => ({ role, content }));
+  const followUp = await jsonRequest(baseUrl, '/api/chat', {
+    method: 'POST',
+    body: {
+      conversationId: listed.payload.chats[0].id,
+      messages: [...history, { role: 'user', content: 'Second question' }]
+    },
+    ...user
+  });
+  assert.equal(followUp.response.status, 200);
+  assert.equal(followUp.payload.conversationId, conversationId);
+  const relisted = await jsonRequest(baseUrl, '/api/chats', user);
+  assert.equal(relisted.payload.chats.length, 1);
+  assert.equal(relisted.payload.chats[0].messages.length, 4);
+
+  const blankTitle = await jsonRequest(baseUrl, `/api/chats/${conversationId}`, {
+    method: 'PATCH',
+    body: { title: '   ' },
+    ...user
+  });
+  assert.equal(blankTitle.response.status, 400);
+
+  const renamed = await jsonRequest(baseUrl, `/api/chats/${conversationId}`, {
+    method: 'PATCH',
+    body: { title: 'My biology questions' },
+    ...user
+  });
+  assert.equal(renamed.response.status, 200);
+  assert.deepEqual(renamed.payload, { id: conversationId, title: 'My biology questions' });
+  const afterRename = await jsonRequest(baseUrl, '/api/chats', user);
+  assert.equal(afterRename.payload.chats[0].title, 'My biology questions');
+  assert.equal(afterRename.payload.chats[0].messages.length, 4);
+
+  const missing = await jsonRequest(baseUrl, '/api/chats/does-not-exist', {
+    method: 'PATCH',
+    body: { title: 'Nothing' },
+    ...user
+  });
+  assert.equal(missing.response.status, 404);
+
+  const other = await createUser(baseUrl, 'intruder@example.test');
+  await finishAssessment(baseUrl, other);
+  const foreign = await jsonRequest(baseUrl, `/api/chats/${conversationId}`, {
+    method: 'PATCH',
+    body: { title: 'Hijacked' },
+    ...other
+  });
+  assert.equal(foreign.response.status, 404);
+
+  const unauthenticated = await jsonRequest(baseUrl, `/api/chats/${conversationId}`, {
+    method: 'PATCH',
+    body: { title: 'Nobody' }
+  });
+  assert.equal(unauthenticated.response.status, 401);
+});

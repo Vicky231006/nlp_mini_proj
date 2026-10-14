@@ -1,0 +1,3 @@
+experiment,questions,hit_at_10,page_recall_at_10,complete_page_coverage,mrr,same_source,same_source_fraction
+EXP-BASE_RAW_QUERY,13.0,0.23076923076923078,0.19230769230769232,0.15384615384615385,0.16666666666666669,1.0,1.0
+EXP-NORM_NORMALIZED_QUERY,13.0,0.0,0.0,0.0,0.0,0.0,0.0

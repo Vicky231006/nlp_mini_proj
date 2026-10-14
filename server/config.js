@@ -45,6 +45,15 @@ export function getServerConfig() {
     throw new Error('CHAT_PROVIDER must be "gemini" or "openai-compatible".');
   }
 
+  const retrievalTopK = Math.min(5, Math.max(1,
+    Number.parseInt(process.env.NCERT_RETRIEVAL_TOP_K || '5', 10) || 5));
+  const retrievalTimeoutMs = Math.min(60_000, Math.max(1_000,
+    Number.parseInt(process.env.NCERT_RETRIEVAL_TIMEOUT_MS || '15000', 10) || 15_000));
+  const retrievalMinScore = Number.parseFloat(process.env.NCERT_RETRIEVAL_MIN_SCORE ?? '');
+  const retrievalMinScoreClamped = Number.isFinite(retrievalMinScore)
+    ? Math.min(10, Math.max(-10, retrievalMinScore))
+    : 0;
+
   return {
     port: Number.parseInt(process.env.PORT || '3001', 10),
     production: process.env.NODE_ENV === 'production',
@@ -57,6 +66,14 @@ export function getServerConfig() {
       baseUrl: getOpenAICompatibleBaseUrl(),
       model: process.env.LOCAL_MODEL_NAME || 'qwen2.5:1.5b',
       apiKey: process.env.LOCAL_MODEL_API_KEY || ''
+    },
+    retrieval: {
+      enabled: process.env.NCERT_RETRIEVAL_ENABLED !== 'false'
+        && process.env.NCERT_RETRIEVAL_ENABLED !== '0',
+      baseUrl: (process.env.NCERT_RETRIEVAL_URL || 'http://127.0.0.1:8000').replace(/\/+$/, ''),
+      topK: retrievalTopK,
+      timeoutMs: retrievalTimeoutMs,
+      minScore: retrievalMinScoreClamped
     }
   };
 }

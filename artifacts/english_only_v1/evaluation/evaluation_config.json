@@ -1,0 +1,27 @@
+{
+  "experiment": "english_only_v1",
+  "corpus_chunks": 2033,
+  "benchmark_questions": 77,
+  "answerable_questions": 65,
+  "unanswerable_questions": 12,
+  "retrieval": {
+    "bm25": true,
+    "dense_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "dense_index": "FAISS IndexFlatIP",
+    "hybrid": "Reciprocal Rank Fusion",
+    "rrf_k": 60,
+    "candidate_k": 20,
+    "retrieval_top_k": 10
+  },
+  "metrics": {
+    "hit": "binary at least one relevant chunk",
+    "page_recall": "fraction of gold evidence pages covered",
+    "chunk_precision": "fraction of retrieved chunks overlapping gold evidence",
+    "mrr": "reciprocal rank of first relevant chunk",
+    "ndcg": "binary relevance nDCG"
+  },
+  "unanswerable_evaluation": "Descriptive only; no rejection accuracy claimed.",
+  "fresh_retrieval": true,
+  "original_baseline_modified": false,
+  "original_benchmark_modified": false
+}

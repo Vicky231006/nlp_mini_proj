@@ -1,0 +1,4 @@
+method,unanswerable_questions,mean_same_source_chunks@10,median_same_source_chunks@10,fraction_same_source@10_gt_0
+BM25,12,4.75,5.0,1.0
+Dense,12,2.5833333333333335,2.0,0.75
+Hybrid,12,4.416666666666667,5.0,1.0

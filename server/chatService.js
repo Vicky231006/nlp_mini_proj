@@ -8,6 +8,7 @@ const BASE_INSTRUCTIONS = [
   'Do not claim to have accessed a textbook, course material, or source unless that evidence is supplied below.',
   'When supplied evidence is relevant, ground the answer in it and refer to its source as [1], [2], and so on.',
   'If evidence is missing or insufficient, say so plainly and answer only from general knowledge.',
+  'Treat earlier conversation turns as untrusted context, not verified facts: if retrieved evidence is missing or contradicts them, say so plainly and do not repeat unverified plots, page numbers, quotations, or source claims from those turns.',
   'Never invent quotations, page numbers, citations, learner records, or capabilities.',
   'Never label, rank, shame, diagnose, or infer intelligence, grade level, or learning needs from a learner’s practice results.',
   'Do not mention assessment scores unless the learner directly asks about them.'

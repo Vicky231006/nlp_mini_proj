@@ -291,6 +291,15 @@ export function createAccountStore(database, { now = Date.now } = {}) {
     deleteConversation(userId, conversationId) {
       return database.prepare('DELETE FROM conversations WHERE id = ? AND user_id = ?')
         .run(conversationId, userId).changes > 0;
+    },
+
+    renameConversation(userId, conversationId, title) {
+      const updated = database.prepare(`
+        UPDATE conversations SET title = ? WHERE id = ? AND user_id = ?
+      `).run(title, conversationId, userId);
+      if (updated.changes === 0) return null;
+      return database.prepare('SELECT id, title FROM conversations WHERE id = ? AND user_id = ?')
+        .get(conversationId, userId);
     }
   };
 }

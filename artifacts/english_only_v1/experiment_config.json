@@ -1,0 +1,17 @@
+{
+  "experiment": "english_only_v1",
+  "purpose": "Controlled experiment testing whether multilingual corpus composition contributes to retrieval degradation.",
+  "original_corpus_chunks": 3023,
+  "english_only_chunks": 2033,
+  "original_benchmark_questions": 120,
+  "english_only_benchmark_questions": 77,
+  "english_only_answerable_questions": 65,
+  "english_only_unanswerable_questions": 12,
+  "chunking": "fixed_200_50",
+  "language_control": "English-language source books only",
+  "original_corpus_modified": false,
+  "frozen_baseline_modified": false,
+  "original_benchmark_modified": false,
+  "benchmark_matching": "Only questions whose class + source_file exists in the English-only corpus are retained.",
+  "next_step": "Build separate English-only BM25, dense, and hybrid indexes and evaluate with the same corrected metric protocol."
+}

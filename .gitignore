@@ -33,3 +33,8 @@ data/
 *.sw?
 *.local
 .playwright-mcp
+.venv-retrieval
+
+# Python bytecode
+__pycache__/
+*.pyc

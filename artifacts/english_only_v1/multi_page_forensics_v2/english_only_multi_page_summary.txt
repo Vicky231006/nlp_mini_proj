@@ -1,0 +1,25 @@
+ENGLISH-ONLY MULTI-PAGE FORENSIC AUDIT
+================================================================================
+
+Unique questions analysed: 13
+Method/question rows: 39
+
+Diagnosis counts:
+diagnosis
+NO_GOLD_PAGE_OR_NEARBY_ANCHOR    26
+ALL_GOLD_PAGES_RETRIEVED          6
+PARTIAL_GOLD_PAGE_RETRIEVAL       5
+NEAR_MISS_WITHIN_1_PAGE           2
+
+Gold-page coverage:
+Mean: 0.218
+Median: 0.000
+
+
+Gold-page extraction:
+Zero-text gold pages: 0/78
+
+
+Near-anchor rates:
+Within +/-1 page: 0.333
+Within +/-2 pages: 0.333
