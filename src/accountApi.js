@@ -29,11 +29,18 @@ export async function loadAccountSession() {
   return rememberSession(await request('/api/auth/session'));
 }
 
-export async function signUp({ displayName, email, password }) {
+export async function signUp({ displayName, email, password, classStandard }) {
   return rememberSession(await request('/api/auth/signup', {
     method: 'POST',
-    body: { displayName, email, password }
+    body: { displayName, email, password, classStandard }
   }));
+}
+
+export function updateClassStandard(classStandard) {
+  return request('/api/account/class', {
+    method: 'PATCH',
+    body: { classStandard }
+  });
 }
 
 export async function signIn({ email, password }) {

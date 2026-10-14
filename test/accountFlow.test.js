@@ -310,3 +310,84 @@ test('follow-ups reuse the listed conversation id and titles can be renamed by t
   });
   assert.equal(unauthenticated.response.status, 401);
 });
+
+test('class standard is captured at signup and can be updated later', async (context) => {
+  const database = createAccountDatabase(':memory:');
+  const app = createApp({
+    database,
+    config: {
+      provider: 'openai-compatible',
+      openAICompatible: {},
+      production: false
+    },
+    provider: {
+      async generate() {
+        return 'Hi there.';
+      }
+    },
+    retrieve: async () => []
+  });
+  const server = createServer(app);
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  context.after(() => {
+    database.close();
+    return new Promise((resolve, reject) =>
+      server.close((error) => error ? reject(error) : resolve()));
+  });
+
+  const baseUrl = `http://127.0.0.1:${server.address().port}`;
+  const signup = await jsonRequest(baseUrl, '/api/auth/signup', {
+    method: 'POST',
+    body: {
+      displayName: 'Std Four',
+      email: 'std4@example.test',
+      password: 'test-password-123',
+      classStandard: 4
+    }
+  });
+  assert.equal(signup.response.status, 201);
+  assert.equal(signup.payload.user.classStandard, 4);
+  const session = { cookie: sessionCookie(signup.response), csrfToken: signup.payload.csrfToken };
+
+  const restored = await jsonRequest(baseUrl, '/api/auth/session', session);
+  assert.equal(restored.payload.user.classStandard, 4);
+
+  const updated = await jsonRequest(baseUrl, '/api/account/class', {
+    method: 'PATCH',
+    body: { classStandard: 2 },
+    ...session
+  });
+  assert.equal(updated.response.status, 200);
+  assert.equal(updated.payload.user.classStandard, 2);
+
+  const invalid = await jsonRequest(baseUrl, '/api/account/class', {
+    method: 'PATCH',
+    body: { classStandard: 99 },
+    ...session
+  });
+  assert.equal(invalid.response.status, 400);
+
+  const missing = await jsonRequest(baseUrl, '/api/account/class', {
+    method: 'PATCH',
+    body: { classStandard: 3 }
+  });
+  assert.equal(missing.response.status, 401);
+
+  const withoutClass = await jsonRequest(baseUrl, '/api/auth/signup', {
+    method: 'POST',
+    body: { displayName: 'No Class', email: 'noclass@example.test', password: 'test-password-123' }
+  });
+  assert.equal(withoutClass.response.status, 201);
+  assert.equal(withoutClass.payload.user.classStandard, null);
+
+  const badSignup = await jsonRequest(baseUrl, '/api/auth/signup', {
+    method: 'POST',
+    body: {
+      displayName: 'Bad Class',
+      email: 'badclass@example.test',
+      password: 'test-password-123',
+      classStandard: 0
+    }
+  });
+  assert.equal(badSignup.response.status, 400);
+});

@@ -58,6 +58,14 @@ export function getRetrievalSettings(env = process.env) {
   };
 }
 
+function normalizeClass(value) {
+  if (value === null || value === undefined) return null;
+  const match = String(value).match(/(\d{1,2})/);
+  if (!match) return null;
+  const parsed = Number.parseInt(match[1], 10);
+  return parsed >= 1 && parsed <= 12 ? parsed : null;
+}
+
 export function createRetriever({
   baseUrl = getRetrievalSettings().baseUrl,
   topK = getRetrievalSettings().topK,
@@ -71,6 +79,7 @@ export function createRetriever({
     if (!enabled || query.length < 2) {
       return [];
     }
+    const classStandard = normalizeClass(input?.classStandard);
 
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), timeoutMs);
@@ -98,7 +107,7 @@ export function createRetriever({
       // Title already carries "Class | Subject | Book | pages X" from Python.
       // Then cut everything below the reranker relevance bar, so the chat
       // shows super-relevant sources only instead of all 5 candidates.
-      const documents = [];
+      let documents = [];
       for (const document of payload.documents) {
         if (
           typeof document?.title !== 'string'
@@ -114,15 +123,29 @@ export function createRetriever({
         }
         documents.push({
           title: document.title.trim(),
-          content: document.content.trim()
+          content: document.content.trim(),
+          classStandard: normalizeClass(document.metadata?.class)
         });
+      }
+      // When the learner's class is known, prefer sources written for it.
+      // If nothing from that class survived, fall back to all relevant docs
+      // rather than answering with no evidence at all.
+      if (classStandard !== null) {
+        const sameClass = documents.filter((document) =>
+          document.classStandard === null || document.classStandard === classStandard);
+        if (sameClass.length > 0 && sameClass.length < documents.length) {
+          console.info(
+            `NCERT retrieval kept ${sameClass.length}/${documents.length} Standard-${classStandard} documents.`
+          );
+          documents = sameClass;
+        }
       }
       if (documents.length < payload.documents.length) {
         console.info(
           `NCERT retrieval kept ${documents.length}/${payload.documents.length} documents (minScore=${minScore}).`
         );
       }
-      return documents;
+      return documents.map(({ title, content }) => ({ title, content }));
     } catch (error) {
       if (error?.name === 'AbortError') {
         console.warn(`NCERT retrieval timed out after ${timeoutMs}ms; falling back without evidence.`);

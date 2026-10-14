@@ -91,6 +91,31 @@ test('chains conversation messages, adds retrieved evidence, and returns its cit
   assert.equal(result.text, 'The answer is grounded in the reference.');
 });
 
+test('passes the learner class to retrieval and the model prompt', async () => {
+  let retrievedInput;
+  let systemInstruction;
+  const service = createChatService({
+    provider: {
+      async generate(input) {
+        systemInstruction = input.systemInstruction;
+        return 'Here is a class-appropriate answer.';
+      }
+    },
+    async retrieve(input) {
+      retrievedInput = input;
+      return [];
+    }
+  });
+
+  await service.reply([{ role: 'user', content: 'Help me with this chapter.' }], null, { classStandard: 4 });
+  assert.equal(retrievedInput.classStandard, 4);
+  assert.match(systemInstruction, /Standard 4/);
+
+  await service.reply([{ role: 'user', content: 'Help me with this chapter.' }]);
+  assert.equal(retrievedInput.classStandard, null);
+  assert.doesNotMatch(systemInstruction, /Standard/);
+});
+
 test('normalizes consecutive user messages after an unanswered turn', async () => {
   let generatedMessages;
   const service = createChatService({

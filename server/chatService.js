@@ -32,6 +32,11 @@ function formatAssessmentProfile(profile) {
   ].join(' ');
 }
 
+function formatLearnerClass(classStandard) {
+  if (!Number.isInteger(classStandard) || classStandard < 1 || classStandard > 12) return '';
+  return ` The learner is in Standard ${classStandard}: pitch explanations, vocabulary, and depth to that level, and prefer retrieved evidence written for that class when it is relevant.`;
+}
+
 function formatEvidence(documents) {
   if (!documents.length) {
     return '\n\nRetrieved evidence: no documents were provided.';
@@ -52,7 +57,7 @@ function toCitation(document) {
 
 export function createChatService({ provider, retrieve = retrieveContext }) {
   return {
-    async reply(input, assessmentProfile = null) {
+    async reply(input, assessmentProfile = null, learnerContext = null) {
       let messages = validateConversation(input);
       while (messages[0]?.role === 'assistant') {
         messages = messages.slice(1);
@@ -70,7 +75,10 @@ export function createChatService({ provider, retrieve = retrieveContext }) {
         return normalized;
       }, []);
       const latestQuestion = messages.at(-1).content;
-      const documents = await retrieve({ query: latestQuestion, messages });
+      const classStandard = Number.isInteger(learnerContext?.classStandard)
+        ? learnerContext.classStandard
+        : null;
+      const documents = await retrieve({ query: latestQuestion, messages, classStandard });
 
       if (!Array.isArray(documents)) {
         throw new Error('The retriever must return an array of documents.');
@@ -111,6 +119,7 @@ export function createChatService({ provider, retrieve = retrieveContext }) {
         systemInstruction: BASE_INSTRUCTIONS
           + formatEvidence(safeDocuments)
           + formatAssessmentProfile(assessmentProfile)
+          + formatLearnerClass(classStandard)
       });
 
       if (typeof text !== 'string' || !text.trim()) {

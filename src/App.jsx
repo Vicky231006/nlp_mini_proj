@@ -14,6 +14,7 @@ function AccountForm({ onAuthenticated }) {
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [classStandard, setClassStandard] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -23,7 +24,12 @@ function AccountForm({ onAuthenticated }) {
     setError('');
     try {
       const session = mode === 'signup'
-        ? await signUp({ displayName, email, password })
+        ? await signUp({
+          displayName,
+          email,
+          password,
+          classStandard: Number.parseInt(classStandard, 10)
+        })
         : await signIn({ email, password });
       await onAuthenticated(session);
     } catch (authError) {
@@ -86,6 +92,22 @@ function AccountForm({ onAuthenticated }) {
             />
           </label>
         )}
+        {mode === 'signup' && (
+          <label className="block text-sm font-bold text-slate-800">
+            Which class are you in?
+            <select
+              required
+              value={classStandard}
+              onChange={(event) => setClassStandard(event.target.value)}
+              className="mt-1 w-full rounded-lg border-2 border-slate-900 bg-amber-50 p-3 font-medium"
+            >
+              <option value="" disabled>Select your class</option>
+              {Array.from({ length: 12 }, (_, index) => index + 1).map((standard) => (
+                <option key={standard} value={standard}>Class {standard}</option>
+              ))}
+            </select>
+          </label>
+        )}
         <label className="block text-sm font-bold text-slate-800">
           Email
           <input
@@ -128,7 +150,7 @@ function AccountForm({ onAuthenticated }) {
         </button>
       </form>
       <p className="mt-5 text-xs leading-relaxed text-slate-600">
-        Your account stores your nickname, email, puzzle results, and chat history on this app’s server. Chat messages are sent to the selected AI provider when you ask for help.
+        Your account stores your nickname, email, class, puzzle results, and chat history on this app’s server. Chat messages are sent to the selected AI provider when you ask for help.
       </p>
     </section>
   );
@@ -208,7 +230,9 @@ function App() {
           </div>
           {user && (
             <div className="flex flex-wrap items-center gap-3">
-              <p className="text-sm font-bold">Hi, {user.displayName}!</p>
+              <p className="text-sm font-bold">
+                Hi, {user.displayName}!{Number.isInteger(user.classStandard) ? ` (Class ${user.classStandard})` : ''}
+              </p>
               <button
                 type="button"
                 onClick={handleSignOut}
@@ -274,7 +298,12 @@ function App() {
                     onComplete={(profile) => setAssessment((current) => ({ ...current, profile }))}
                     onOpenTutor={() => setActiveTab('tutor')}
                   />
-                : <TutoringSession key={user.id} />}
+                : <TutoringSession
+                    key={user.id}
+                    learnerClass={user.classStandard ?? null}
+                    onLearnerClassChange={(classStandard) => setUser((current) =>
+                      current ? { ...current, classStandard } : current)}
+                  />}
             </>
           )}
         </main>

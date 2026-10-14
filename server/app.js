@@ -156,14 +156,15 @@ export function createApp({
       const result = await accounts.register({
         email: request.body?.email,
         displayName: request.body?.displayName,
-        password: request.body?.password
+        password: request.body?.password,
+        classStandard: request.body?.classStandard
       });
       setSessionCookie(response, result.session.token, config.production);
       response.status(201).json({ user: result.user, csrfToken: result.session.csrfToken });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       const status = message.startsWith('Enter a valid')
-        || message.startsWith('Choose a name')
+        || message.startsWith('Choose a')
         || message.startsWith('Your password')
         ? 400
         : message.startsWith('An account with')
@@ -209,6 +210,20 @@ export function createApp({
 
   app.get('/api/account/assessment', authenticate, (request, response) => {
     response.json(accounts.getAssessment(request.account.user.id));
+  });
+
+  app.patch('/api/account/class', authenticate, requireCsrf, (request, response) => {
+    try {
+      const user = accounts.updateClassStandard(request.account.user.id, request.body?.classStandard);
+      if (!user) {
+        response.status(404).json({ error: 'Your account was not found. Please sign in again.' });
+        return;
+      }
+      response.json({ user });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      response.status(400).json({ error: message });
+    }
   });
 
   app.post('/api/assessment/attempts', authenticate, requireCsrf, (request, response) => {
@@ -304,6 +319,7 @@ export function createApp({
     try {
       const messages = validateConversation(request.body?.messages);
       const profile = accounts.getAssessment(request.account.user.id)?.profile;
+      const classStandard = request.account.user.classStandard ?? null;
       const requestedConversationId = request.body?.conversationId;
       let conversationId;
       let existingConversation = null;
@@ -324,7 +340,7 @@ export function createApp({
         response.status(503).json({ error: 'Gemini is not configured. Add a Gemini API key to your local .env file.' });
         return;
       }
-      const result = await chatService.reply(messages, profile);
+      const result = await chatService.reply(messages, profile, { classStandard });
       const fullMessages = mergeConversationHistory(existingConversation?.messages || [], messages);
       fullMessages.push({ role: 'assistant', content: result.text, citations: result.citations });
       const title = existingConversation?.title || messages.find((message) => message.role === 'user').content.slice(0, 48);

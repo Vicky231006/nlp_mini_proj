@@ -4,8 +4,10 @@ import {
   getChatHealth,
   loadConversations,
   renameConversation,
-  sendStudentQuery
+  sendStudentQuery,
+  updateClassStandard
 } from '../../accountApi';
+import MessageMarkdown from './MessageMarkdown';
 
 const MAX_CONTEXT_MESSAGES = 40;
 const MAX_MESSAGE_LENGTH = 8_000;
@@ -62,7 +64,7 @@ function QueryInput({ onSend, isLoading }) {
   );
 }
 
-const TutoringSession = () => {
+const TutoringSession = ({ learnerClass = null, onLearnerClassChange = null }) => {
   const [chats, setChats] = useState([]);
   const [activeChatId, setActiveChatId] = useState(null);
   const [chatError, setChatError] = useState(null);
@@ -70,6 +72,8 @@ const TutoringSession = () => {
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
   const [serviceStatus, setServiceStatus] = useState('ready');
   const [providerName, setProviderName] = useState('Gemini');
+  const [isSavingClass, setIsSavingClass] = useState(false);
+  const [classError, setClassError] = useState(null);
   const [editingChatId, setEditingChatId] = useState(null);
   const [draftTitle, setDraftTitle] = useState('');
   const [isRenaming, setIsRenaming] = useState(false);
@@ -123,6 +127,21 @@ const TutoringSession = () => {
       container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
     }
   }, [activeChat?.id, activeChat?.messages.length, chatError, isLoading]);
+
+  const handleClassChange = async (event) => {
+    const nextClass = Number.parseInt(event.target.value, 10);
+    if (!Number.isInteger(nextClass) || nextClass === learnerClass) return;
+    setIsSavingClass(true);
+    setClassError(null);
+    try {
+      const { user } = await updateClassStandard(nextClass);
+      onLearnerClassChange?.(user.classStandard);
+    } catch (error) {
+      setClassError(error instanceof Error ? error.message : 'Could not update your class.');
+    } finally {
+      setIsSavingClass(false);
+    }
+  };
 
   const createNewChat = () => {
     if (isLoading) return;
@@ -266,6 +285,27 @@ const TutoringSession = () => {
           </button>
         </div>
         <p className="text-xs font-semibold text-slate-700">Saved to your account on this app.</p>
+        <div className="flex items-center gap-2">
+          <label htmlFor="learner-class" className="text-xs font-black text-slate-900">
+            My class
+          </label>
+          <select
+            id="learner-class"
+            value={learnerClass ?? ''}
+            onChange={handleClassChange}
+            disabled={isSavingClass}
+            aria-label="Your school class"
+            className="min-w-0 flex-1 rounded-lg border-2 border-slate-900 bg-white px-2 py-1.5 text-sm font-bold disabled:opacity-50"
+          >
+            <option value="" disabled>Select</option>
+            {Array.from({ length: 12 }, (_, index) => index + 1).map((standard) => (
+              <option key={standard} value={standard}>Class {standard}</option>
+            ))}
+          </select>
+        </div>
+        {classError && (
+          <p role="alert" className="text-xs font-bold text-red-800">{classError}</p>
+        )}
         {isLoadingHistory && <p className="text-sm font-bold text-slate-700">Loading your chats…</p>}
         <ul className="flex max-h-56 min-h-0 flex-col gap-2 overflow-y-auto overscroll-y-contain lg:max-h-none lg:flex-1">
           {chats.map((chat) => (
@@ -348,7 +388,11 @@ const TutoringSession = () => {
                   ? 'bg-red-600 font-bold text-white'
                   : 'bg-white font-medium text-slate-800 shadow-[2px_2px_0px_#0f172a]'
               }`}>
-                <p className="whitespace-pre-wrap leading-relaxed">{message.content}</p>
+                {message.role === 'assistant' ? (
+                  <MessageMarkdown content={message.content} />
+                ) : (
+                  <p className="whitespace-pre-wrap leading-relaxed">{message.content}</p>
+                )}
                 {message.role === 'assistant' && message.citations?.length > 0 && (
                   <details className="border-t border-slate-200 pt-2 text-xs">
                     <summary className="cursor-pointer font-bold text-blue-700 hover:underline">

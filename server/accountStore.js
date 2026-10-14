@@ -71,14 +71,28 @@ export function createAccountDatabase(
       PRIMARY KEY(conversation_id, position)
     );
   `);
+  const userColumns = database.prepare('PRAGMA table_info(users)').all();
+  if (!userColumns.some((column) => column.name === 'class_standard')) {
+    database.prepare('ALTER TABLE users ADD COLUMN class_standard INTEGER').run();
+  }
   return database;
+}
+
+export function parseClassStandard(value) {
+  if (value === null || value === undefined || value === '') return null;
+  const parsed = typeof value === 'number' ? value : Number.parseInt(String(value), 10);
+  if (!Number.isInteger(parsed) || parsed < 1 || parsed > 12) {
+    throw new Error('Choose a class between 1 and 12.');
+  }
+  return parsed;
 }
 
 export function createAccountStore(database, { now = Date.now } = {}) {
   const publicUser = (user) => ({
     id: user.id,
     email: user.email,
-    displayName: user.display_name
+    displayName: user.display_name,
+    classStandard: user.class_standard ?? null
   });
 
   async function createAccountSession(user) {
@@ -93,7 +107,7 @@ export function createAccountStore(database, { now = Date.now } = {}) {
   }
 
   return {
-    async register({ email, displayName, password }) {
+    async register({ email, displayName, password, classStandard }) {
       const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
       const normalizedName = typeof displayName === 'string' ? displayName.trim() : '';
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail) || normalizedEmail.length > 254) {
@@ -109,6 +123,7 @@ export function createAccountStore(database, { now = Date.now } = {}) {
       if (typeof password !== 'string' || password.length < 10 || password.length > 128) {
         throw new Error('Your password must be between 10 and 128 characters.');
       }
+      const normalizedClass = parseClassStandard(classStandard);
 
       const salt = randomBytes(16);
       const derivedKey = await scrypt(password, salt, PASSWORD_BYTES);
@@ -116,13 +131,14 @@ export function createAccountStore(database, { now = Date.now } = {}) {
         id: randomBytes(16).toString('hex'),
         email: normalizedEmail,
         display_name: normalizedName,
-        password_hash: `${salt.toString('hex')}:${derivedKey.toString('hex')}`
+        password_hash: `${salt.toString('hex')}:${derivedKey.toString('hex')}`,
+        class_standard: normalizedClass
       };
       try {
         database.prepare(`
-          INSERT INTO users (id, email, display_name, password_hash, created_at)
-          VALUES (?, ?, ?, ?, ?)
-        `).run(user.id, user.email, user.display_name, user.password_hash, now());
+          INSERT INTO users (id, email, display_name, password_hash, class_standard, created_at)
+          VALUES (?, ?, ?, ?, ?, ?)
+        `).run(user.id, user.email, user.display_name, user.password_hash, user.class_standard, now());
       } catch (error) {
         if (error.code === 'ERR_SQLITE_ERROR' && /UNIQUE constraint failed: users.email/i.test(error.message)) {
           throw new Error('An account with that email already exists. Try signing in.');
@@ -148,7 +164,7 @@ export function createAccountStore(database, { now = Date.now } = {}) {
     authenticate(token) {
       if (!token) return null;
       const session = database.prepare(`
-        SELECT sessions.csrf_token, sessions.expires_at, users.id, users.email, users.display_name
+        SELECT sessions.csrf_token, sessions.expires_at, users.id, users.email, users.display_name, users.class_standard
         FROM sessions JOIN users ON users.id = sessions.user_id
         WHERE sessions.token_hash = ?
       `).get(hashToken(token));
@@ -291,6 +307,19 @@ export function createAccountStore(database, { now = Date.now } = {}) {
     deleteConversation(userId, conversationId) {
       return database.prepare('DELETE FROM conversations WHERE id = ? AND user_id = ?')
         .run(conversationId, userId).changes > 0;
+    },
+
+    updateClassStandard(userId, classStandard) {
+      const normalized = parseClassStandard(classStandard);
+      if (normalized === null) {
+        throw new Error('Choose a class between 1 and 12.');
+      }
+      const updated = database.prepare('UPDATE users SET class_standard = ? WHERE id = ?')
+        .run(normalized, userId);
+      if (updated.changes === 0) return null;
+      return publicUser(database.prepare(
+        'SELECT id, email, display_name, class_standard FROM users WHERE id = ?'
+      ).get(userId));
     },
 
     renameConversation(userId, conversationId, title) {
