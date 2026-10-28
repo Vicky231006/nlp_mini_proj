@@ -1,0 +1,103 @@
+E. Curriculum Metadata Filtering Ablation
+We appraised the impact of progressively scoping the search candidate pool applying authoritative curriculum metadata across
+100 answerable questions (Table VI). TABLE VI. During
+Phase A validation in NCERT_exp1a.ipynb, our automated audit across 3,584 page records uncovered that apparent retrieval
+misses regularly stem from an unaddressed metadata discrepancy: the divergence between printed textbook page numbers
+and physical PDF page indices (Table VII). BENCHMARK ENGINEERING: THE PAGE PROVENANCE CONFOUNDER
+In AI benchmarking, low retrieval accuracy is often credited by researchers to model architecture or embedding capacity. PROGRESSIVE CURRICULUM METADATA FILTERING PERFORMANCE
+ Curriculum Filter Scope
+Candidate Chunks
+ Hit@10
+ MRR
+ Reduction in Search Space
+Unfiltered Corpus
+ 3,023.0
+ 0.6300
+ 0.5682
+Baseline (0% reduction)
+Class-Level Filter
+ 890.6
+ 0.6800
+ 0.6054
+70.5% reduction
+Class + Subject Filter
+ 154.3
+ 0.7300
+ 0.6451
+94.9% reduction
+Class + Subject + Book Filter
+ 139.0
+ 0.7500
+ 0.6568
+95.4% reduction
+VI. TABLE VII. Stated separately, AUDIT OF 10-QUESTION PILOT - EFFECT OF PAGE PROVENANCE RESOLUTION
+ Benchmark Condition
+ Passing Queries
+ Spurious Misses
+ Pass Rate
+ Diagnostic Cause
+Uncalibrated Page Keys
+ 7 / 10
+ 2
+ 70.0%
+Printed vs. PDF page index mismatch
+Authoritative Dual-Key Mapping
+ 9 / 10
+ 0
+ 90.0%
+Physical PDF page alignment validated
+In printed NCERT textbooks, page numbering resets per chapter or skips front-matter (prefaces, contents, national anthems), at least empirically. So an answer appearing on printed page 14 may reside on physical PDF page 22, broadly speaking. When gauged against printed
+keys, the correct physical page was retrieved by the retrieval engine but was punished as a miss. Aligning metadata via an
+authoritative dual-key schema raised benchmark passing from 70% to 90% without retraining or prompt changes, in many respects. This
+accentuates an vital methodological rule: extit{educational benchmarks must freeze physical PDF page provenance prior
+to algorithmic check.}
+VII. GENERATION GROUNDING AND THE ABSTENTION GAP
+To gauge whether retrieved proof guarantees faithful answers, we ran an judged human study on 50
+child-facing responses created by Qwen-1.5B (Table VIII). TABLE VIII. HUMAN EVALUATION OF GENERATION GROUNDING AND ABSTENTION (QWEN-1.5B)
+ Evaluation Metric / Dimension
+ Raw Count
+ Percentage
+ Ramification for Educational Deployment
+Strict Factual Correctness
+ 34 / 49
+ 69.39%
+Fully grounded, textbook-faithful answers
+Lenient Correctness (incl, to a significant degree. Partial)
+ 43 / 49
+ 87.76%
+Pedagogically helpful scaffolding
+Unsupported Claim Rate
+ 16 / 50
+ 32.00%
+Comprises ungrounded assertions beyond indication
+Major Factual Hallucinations
+ 7 / 50
+ 14.00%
+Directly contradicts or fabricates facts
+Abstention Precision on Unanswerables
+ 0 / 2
+ 0.00%
+Invalid abstentions on supported queries
+Abstention Recall on Unanswerables
+(N=7)
+ 0 / 7
+ 0.00%
+Failed to abstain on out-of-scope questions
+Hallucination Rate on Unanswerables
+ 4 / 7
+ 57.14%
+Confabulated answers for unanswerable items
+NLI Sufficiency Gate Accuracy
+ 13 / 40
+ 32.50%
+Off-the-shelf NLI failed to gate indication
+The evaluation exposes two acute vulnerabilities: First, 32.0% of responses comprised unsupported claims, and 14.0%
+encompassed severe factual hallucinations. Second, when offered with 7 unanswerable questions where indication was absent
+from the curriculum, the model failed to abstain in 100% of cases, hallucinating fancy confabulations in 57.14% of
+instances (e.g. inventing canine psychology theories in response to a simple grammar spelling exercise). Also, an
+off-the-shelf NLI probe (cross-encoder/nli-deberta-v3-small) evaluated across 40 annotated claims yielded an exactness of
+only 32.5% against human sufficiency labels. Generic entailment thresholds can't are uncalibrated safety gates for
+children. IEEE TRANSACTIONS ON LEARNING TECHNOLOGIES
+DSILVA et al.: CURRICULUM-GROUNDED PEDAGOGICAL AGENTS
+NCERT Grounded Adaptive AI Tutor Prototype, Peer Review Manuscript
+Page 6 of 9

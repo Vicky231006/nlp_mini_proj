@@ -38,3 +38,13 @@ data/
 # Python bytecode
 __pycache__/
 *.pyc
+
+
+*.pdf
+**/*.pdf
+*.docx
+**/*.docx
+*.doc
+**/*.doc
+*.tex
+**/*.tex

@@ -1,0 +1,91 @@
+A. Examination of Dense Retrieval Degradation in Primary Curricula
+The empirical data in Table II proves any firm finding: BM25 greatly outperforms thick MiniLM retrieval across
+all evaluation metrics. At rank 5, a 129.4% lead (0.6000 vs. 0.2615) is upheld by BM25. At rank 1, BM25 reaches Hit@1 of 0.4462 compared to 0.1692 for dense retrieval, a 163.7%
+relative benefit. In Mean Reciprocal Rank, BM25 hits
+0.5094 versus 0.2104. Also, while fixed RRF augments dense retrieval performance (raising Hit@5 from 0.2615 to
+0.5077), it dilutes BM25's top-rank precision, generating an MRR of 0.3472. Thick models fail here because primary school
+questions hinge on distinctive proper nouns ('Haldi', 'Mister Nobody') and localized phrases. These thin
+lexical signals are projected into the diffuse conceptual clusters by bi-encoders, retrieving passages from other grades that discuss generic animals or activities
+instead of the exact curriculum story. B. Query Complexity Stratification and the Multi-Page Barrier
+We stratified the benchmark into the three categories: Direct/Paraphrase queries (N=37), Hard Distractors (N=15), and
+Multi-Page Synthesized queries (N=13). As detailed in Table III, retrieval performance diverges drastically across all these
+structural types. TABLE III. Still, for queries needing
+proof blended across non-contiguous pages, BM25 collapses to 0.0769 (1 hit out of 13). RETRIEVAL PERFORMANCE STRATIFIED BY QUERY COMPLEXITY
+ Structural Query Category
+ Count (N)
+ BM25 Hit@10
+ Dense Hit@10
+ RRF Hit@10
+Direct / Paraphrase Query
+ 37
+ 0.7568
+ 0.4054
+ 0.7297
+Hard Distractor Query
+ 15
+ 0.8000
+ 0.3333
+ 0.8000
+Multi-Page Synthesized Query
+ 13
+ 0.0769
+ 0.1538
+ 0.1538
+On single-page lookups, BM25 achieves solid recall (Hit@10 of 0.7568 and 0.8000). Simultaneously, dense retrieval achieves
+only 0.1538. This empirical collapse exposes the core limitation of fixed-window chunking: when premise and conclusion
+occupy separate pages, single-chunk retrievers can't encapsulate joint relevance. C. Negative Result on Generative Query Normalization
+In experiment NCERT_exp1a.ipynb, we tested whether normalizing informal student queries via an LLM rewriter sharpens
+retrieval accuracy. Table IV documents that query normalization created one more clear negative result. TABLE IV. The generative model
+introduced complex adult synonyms that weakened the raw lexical specificity of primary school textbook vocabulary. ABLATION: RAW STUDENT QUERIES VS. GENERATIVE NORMALIZATION
+ Query Treatment
+ Gauged
+ Queries
+ MRR
+ Same-Source Match
+ Fraction
+ Empirical Impact
+Raw Student Query
+ 10
+ 0.6492
+ 1.0000
+Baseline curriculum consistency
+LLM-Normalized Query
+ 10
+ 0.6021
+ 0.8000
+-7.25% MRR, 20% cross-grade
+intrusion
+Automated normalization degraded MRR by 7.25% and caused a 20% cross-grade intrusion rate. D. Two-Stage Child-Perspective Retrieval and Cross-Encoder Reranking
+We judged one independently annotated 50-query child benchmark (43 answerable items) reflecting genuine spoken child
+queries. Deep cross-attention successfully tackles colloquial phrasing that confuses bi-encoders. In light of this dynamic, we compared BM25, dense retrieval, and two-stage cross-encoder reranking
+(cross-encoder/ms-marco-MiniLM-L-6-v2) over RRF candidates (Table V). TABLE V. TWO-STAGE RETRIEVAL ON 50-QUERY CHILD BENCHMARK (43 ANSWERABLE ITEMS)
+ Retrieval Pipeline
+ Applicable@1
+ Relevant@3
+ Relevant@5
+ MRR
+ nDCG@5
+BM25 Baseline
+ 0.6512
+ 0.8140
+ 0.8372
+ 0.7248
+ 0.8185
+Packed MiniLM (FAISS)
+ 0.7674
+ 0.8837
+ 0.9302
+ 0.8508
+ 0.9331
+RRF + Cross-Encoder Reranker
+ 0.8837
+ 0.9535
+ 0.9535
+ 0.9244
+ 0.9780
+On conversational child language, dense semantic retrieval outperforms exact keyword matching (Relevant@5 of 0.9302 vs
+0.8372), and two-stage cross-encoder reranking achieves this highest overall accuracy: Relevant@5 of 0.9535, MRR of
+0.9244, and nDCG@5 of 0.9780. That is to say, IEEE TRANSACTIONS ON LEARNING TECHNOLOGIES
+DSILVA et al.: CURRICULUM-GROUNDED PEDAGOGICAL AGENTS
+NCERT Grounded Adaptive AI Tutor Prototype, Peer Review Manuscript
+Page 5 of 9

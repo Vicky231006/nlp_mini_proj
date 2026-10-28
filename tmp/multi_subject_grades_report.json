@@ -1,0 +1,387 @@
+{
+  "timestamp": "2026-10-28T13:55:07.056Z",
+  "total": 23,
+  "passed": 21,
+  "failed": 2,
+  "results": [
+    {
+      "testId": 1,
+      "grade": 1,
+      "subject": "English",
+      "chapter": "Chapter 1 (Two Little Hands)",
+      "query": "teach me 1st chapter in inglis",
+      "expectedBook": "Mridang",
+      "latencyMs": 2697,
+      "citationCount": 4,
+      "citations": [
+        "Class_01 | English | Mridang | pages 11,12,13,14,15,16",
+        "Class_01 | English | Mridang | pages 16,17",
+        "Class_01 | English | Mridang | pages 31,32,33,34,35",
+        "Class_01 | English | Mridang | pages 29,30,31,32"
+      ],
+      "passed": true,
+      "aiResponse": "Hi there! 🌟 I would love to help you with your English lesson!\n\nThe first chapter in your **Mridang** textbook is called **\"Two Little Hands\"** [1]. It is a very fun song about our body parts! Let’s learn it together step-by-step.\n\n### 1. Let’s Sing the Song! 🎶\nFirst, let’s read the first part of the song from your book [1]:\n\n> *Two little hands go clap, clap, clap.*\n> *Two little legs go tap, tap, tap.*\n> *Two little eyes are open wide.*\n> *One little head goes side to side.*\n\n**Try this:**\n*   Clap your hands when you say \"clap, clap, clap.\" 👏\n*   Tap your feet when you say \"tap, tap, tap.\" 👣\n*   Open your eyes wide! 👀\n*   Move your head from side to side! 🤷\n\n### 2. More Body Parts! 🧘\nThe song continues with more parts of our body [1]:\n\n> *Two little eyes to look around.*\n> *Two little ears to hear any sound.*\n> *One little nose to smell and breathe.*\n> *One little mouth that likes to eat.*\n\n**Try this:**\n*   Look around the room with your eyes. 👁️\n*   Listen for any sounds with your ears. 👂\n*   Smell a flower or your hand with your nose. 👃\n*   Smile with your mouth! 😊\n\n### 3. A Fun Summary Song 🎵\nYour book also has a short song to help you remember these parts [2]:\n\n> *Head, shoulders, knees and toes,*\n> *Head, shoulders, knees and toes,*\n> *And eyes and ears,*\n> *And mouth and nose.*\n\n**Try this:** As you sing, touch your head, then your shoulders, then your knees, and finally your toes! It’s like a little dance! 💃🕺\n\n### 4. New Words to Learn 📝\nLet’s look at some new words from the chapter [1][2]:\n*   **Hand**\n*   **Leg**\n*   **Head**\n*   **Eye**\n*   **Ear**\n*   **Nose**\n*   **Mouth**\n\n**Quick Game:** Can you point to your **nose** and say \"Nose\"? Now point to your **ear** and say \"Ear\"? You are doing great! 🌟\n\nWould you like to try saying the song out loud, or do you want to look at the next part of the chapter? 😊"
+    },
+    {
+      "testId": 2,
+      "grade": 1,
+      "subject": "English",
+      "chapter": "Chapter 2 (Greetings)",
+      "query": "teach me greetings chapter 2 in english",
+      "expectedBook": "Mridang",
+      "latencyMs": 1928,
+      "citationCount": 3,
+      "citations": [
+        "Class_01 | English | Mridang | pages 29,30,31,32",
+        "Class_01 | English | Mridang | pages 27,28,29,30",
+        "Class_01 | English | Mridang | pages 7"
+      ],
+      "passed": true,
+      "aiResponse": "Hello! I am so happy to help you with your English book, *Mridang*! 🌟 Let’s look at **Chapter 2: Greetings** together. It is a very fun and polite chapter!\n\nHere is what you learn in this chapter:\n\n**1. How to Say Hello 👋**\nWhen you meet someone, you can say:\n*   **\"Good morning\"** if it is in the morning. ☀️\n*   **\"Good afternoon\"** if it is after lunch. 🌤️\n*   **\"Good evening\"** if it is late in the day. 🌆\n*   **\"Good night\"** when you are going to sleep. 🌙\n*   **\"Namaste\"** is a very nice Indian greeting you can use anytime! 🙏\n\n**2. Matching Pictures and Sentences 🖼️**\nIn the book, there is an activity where you match pictures to sentences. You will see action words like:\n*   **Combing** (brushing your hair) 💇\n*   **Eating** (having food) 🍎\n*   **Seeing** (looking with your eyes) 👀\n*   **Saying** (talking) 🗣️\n*   **Hearing** (listening with your ears) 👂\n*   **Walking** (moving your feet) 🚶\n*   **Playing** (having fun) ⚽\n\n**3. Writing Practice ✍️**\nYou will also practice writing letters like **I, J, K, L, M, N, O, P, G, H**. You can sing the ABC song to remember them! 🎵\n\n**4. Listening to Sounds 🔊**\nYou will learn to listen to the first sound of words. For example:\n*   **F** is for **Fox**, **Foot**, **Fish** 🦊\n*   **G** is for **Goat**, **Gum**, **Gift** 🎁\n\n**Let’s Practice!**\nCan you say **\"Good morning\"** to your family right now? And can you find a toy that starts with the letter **F**? 🧸\n\nYou are doing a great job learning! Let me know if you want to practice any of these words with me. 😊"
+    },
+    {
+      "testId": 3,
+      "grade": 1,
+      "subject": "Mathematics",
+      "chapter": "Chapter 1 (Finding the Furry Cat)",
+      "query": "help me with finding the furry cat in maths",
+      "expectedBook": "Joyful-Mathematics",
+      "latencyMs": 20308,
+      "citationCount": 4,
+      "citations": [
+        "Class_01 | Mathematics | Joyful-Mathematics__English_ | pages 8,9",
+        "Class_01 | Mathematics | Joyful-Mathematics__English_ | pages 7,8",
+        "Class_01 | Mathematics | Joyful-Mathematics__English_ | pages 8",
+        "Class_01 | Mathematics | Joyful-Mathematics__English_ | pages 14,15,16,17"
+      ],
+      "passed": true,
+      "aiResponse": "Hi there! 🐱 That sounds like a fun part of your Maths book, *Joyful Mathematics*!\n\nThe poem \"Finding the Furry Cat!\" is in **Chapter 1** of your book. It’s not just a poem to read; it helps you learn about **positions** and **where things are**. 📍\n\nHere is how you can use the poem to learn:\n\n1.  **Look for the Cat:** The poem asks, \"Where are you, my furry cat?\" It gives clues like:\n    *   \"Are you **sitting on** the window shed?\"\n    *   \"Are you **sleeping under** my bed?\"\n    *   \"Are you **inside** the backpack?\"\n    *   \"Are you **outside** the red rack?\"\n    *   \"Saw you **hiding below** the mat.\"\n    *   \"Saw you **hopping above** the hat.\" 🎩\n\n2.  **Learn the Words:** These words tell us where something is:\n    *   **On** (like a cat on a table)\n    *   **Under** (like a toy under the chair)\n    *   **Inside** (like a ball inside a box)\n    *   **Outside** (like a dog outside the house)\n    *   **Above** (like a bird above the tree)\n    *   **Below** (like a fish below the water)\n\n3.  **Play a Game:** You can play a little game with a toy or a stuffed animal!\n    *   Hide your toy.\n    *   Say, \"I am looking for my toy! Is it **on** the shelf?\"\n    *   If it is, say, \"Yes! It is **on** the shelf!\"\n    *   If it is not, say, \"No! Is it **under** the bed?\"\n    *   Keep going until you find it! 🕵️‍♂️\n\nThis helps your brain learn how to talk about where things are, which is a very important Maths skill! 🧠✨\n\nDo you want to try hiding a toy and using these words? Or would you like to read the poem together? 😊"
+    },
+    {
+      "testId": 4,
+      "grade": 1,
+      "subject": "Mathematics",
+      "chapter": "Chapter 2 (Shapes)",
+      "query": "explain shapes in maths",
+      "expectedBook": "Joyful-Mathematics",
+      "latencyMs": 1513,
+      "citationCount": 3,
+      "citations": [
+        "Class_01 | Mathematics | Joyful-Mathematics__English_ | pages 8",
+        "Class_01 | Mathematics | Joyful-Mathematics__English_ | pages 7,8",
+        "Class_01 | Mathematics | Joyful-Mathematics__English_ | pages 7"
+      ],
+      "passed": true,
+      "aiResponse": "Hi there! 🌟 I am so happy you want to learn about shapes! It is like a big, fun puzzle.\n\nIn your **Joyful Mathematics** book, we learn that shapes are all around us! 🏠🍎🚗\n\nHere are the most important shapes you will see:\n\n1.  **Circle** ⚪: It is round, like a ball or a coin. It has no corners.\n2.  **Square** 🟦: It has 4 equal sides and 4 corners. It looks like a window.\n3.  **Triangle** 🔺: It has 3 sides and 3 corners. It looks like a slice of pizza or a roof.\n4.  **Rectangle** 🟩: It has 4 sides (two long, two short) and 4 corners. It looks like a door or a book.\n\n**Fun Way to Learn:**\nYour book says that we learn best when we **play**! 🎲\n*   Look around your room. Can you find a **circle**? (Maybe a clock?)\n*   Can you find a **square**? (Maybe a tile on the floor?)\n*   Can you find a **triangle**? (Maybe a slice of cheese?)\n\nMaths is not just numbers; it is about seeing the world! 🌍\nDo you want to play a \"Shape Hunt\" game? Tell me one shape you see right now! 😊"
+    },
+    {
+      "testId": 5,
+      "grade": 2,
+      "subject": "English",
+      "chapter": "Chapter 1 (My Bicycle)",
+      "query": "teach me chapter 1 my bicycle in english",
+      "expectedBook": "Mridang",
+      "latencyMs": 28172,
+      "citationCount": 5,
+      "citations": [
+        "Class_02 | English | Mridang | pages 14,15,16,17",
+        "Class_02 | English | Mridang | pages 16,17",
+        "Class_02 | English | Mridang | pages 19,20,21",
+        "Class_02 | English | Mridang | pages 17,18,19,20",
+        "Class_02 | English | Mridang | pages 21,22,23,24"
+      ],
+      "passed": true,
+      "aiResponse": "Hi there! 🚲 I am so happy to help you learn about **Chapter 1: My Bicycle** from your English book, *Mridang*! It is a very fun chapter. Let’s explore it together, step by step.\n\n### 1. Let’s Read the Poem 📖\nFirst, let’s look at the poem in the book. It tells us about a child and their red bicycle. Here are some key lines from the poem [1]:\n\n*   \"I have a red bicycle. I pedal and I ride.\"\n*   \"Trin… trin… trin… goes the bell.\"\n*   \"The seat is blue in colour, The tyres and pedals are black.\"\n*   \"Sometimes fast, sometimes slow, But my bicycle is always on track.\"\n*   \"To keep my bicycle moving, All I need is some air.\"\n*   \"I put on my little helmet, And go happily everywhere.\"\n\n### 2. New Words to Know 📝\nThe book introduces some new words to help you understand the poem better [1]:\n*   **Pedal:** The part of the bicycle you push with your feet to make it move.\n*   **Aside:** To move to the side. (The bell makes friends move *aside* so the rider can pass).\n*   **Sometimes:** Now and then; not always.\n*   **Track:** The path or road the bicycle is following.\n*   **Helmet:** A hard hat you wear to keep your head safe.\n*   **Everywhere:** In all places.\n\n### 3. Let’s Think About Safety 🛡️\nThe poem mentions wearing a **helmet**. This is a very important safety measure! Just like wearing a seat belt in a car, a helmet protects your head if you fall. The book also suggests talking about other safety things we do, like wearing seat belts [1][2].\n\n### 4. Parts of a Bicycle 🚲\nDo you know the names of the different parts of a bicycle? The book has an activity where you can match names to parts [4]. Here are some parts you might see:\n*   **Seat:** Where you sit.\n*   **Pedal:** What you push with your feet.\n*   **Wheel:** The round parts that roll.\n*   **Bell:** The part that goes *trin trin trin*!\n*   **Handle:** What you hold onto to steer.\n*   **Brake:** What you use to stop the bicycle.\n*   **Carrier:** A basket or rack at the back to carry things.\n\n### 5. Fun Activity: Magic Bicycle! ✨\nThe book asks you to imagine you have a **magic bicycle** [3][4].\n*   What would your magic bicycle look like?\n*   Where would you ride it? (Maybe to the moon? Or to a castle?)\n*   What would you do there?\n\nYou can even draw your magic bicycle in your notebook! 🎨\n\n### 6. Quick Check! 🧠\nLet’s see if you remember the poem:\n1.  What color is the bicycle in the poem? (Answer: Red)\n2.  What sound does the bell make? (Answer: Trin... trin... trin)\n3.  What does the child wear to stay safe? (Answer: A little helmet)\n4.  What does the child need to keep the bicycle moving? (Answer: Some air)\n\nGreat job! You are learning so much about bicycles and safety. Do you have a bicycle? Or have you ever ridden one? 🚴‍♂️"
+    },
+    {
+      "testId": 6,
+      "grade": 2,
+      "subject": "English",
+      "chapter": "Chapter 2 (Seeing without Seeing)",
+      "query": "teach me 2nd chapter inglis",
+      "expectedBook": "Mridang",
+      "latencyMs": 22231,
+      "citationCount": 3,
+      "citations": [
+        "Class_02 | English | Mridang | pages 40,41,42",
+        "Class_02 | English | Mridang | pages 31,32,33",
+        "Class_02 | English | Mridang | pages 14,15,16,17"
+      ],
+      "passed": true,
+      "aiResponse": "Hello there! 🌟 I am so happy to help you with your English lesson.\n\nWe are going to look at **Chapter 2** from your book *Mridang*. The title of this chapter is **\"Seeing without Seeing\"** [1]. It is a very interesting story about a girl named Onshangla.\n\nLet’s read a little bit of the story together:\n\n**The Story So Far:**\nOnshangla came home from school. She was very quiet. Her mother, Ava, noticed this and asked, \"Onshangla, you are very quiet today. Did anything happen in school?\" [1]\n\nOnshangla told her mother that a new boy joined their class. The teacher helped him sit in the front. Onshangla said, \"He wears black glasses. He cannot see. He will come every day. How will he do things?\" [1]\n\nAva told Onshangla to finish her biscuits and milk. Then, she said, \"Then we will play a new game.\" [1]\n\n**Let’s Play the Game!**\nAva tied a scarf over Onshangla’s eyes. Then Ava asked, \"Now tell me what do I hold in my hand?\" [1]\n\nOnshangla was a little confused. She asked, \"How can I? My eyes are closed. I can’t see.\" [1]\n\nBut Ava said, \"You can find out. Try it.\" [1]\n\n**Question for you:** 🤔\nAva had a rose in her hand. Onshangla touched it. What do you think Onshangla felt? Did she guess what it was?\n\nYou can try this at home! Close your eyes, have a parent or friend hold a soft toy or a fruit in your hand, and try to guess what it is just by touching it. It is a fun way to learn how we can use our other senses when our eyes are closed!\n\nHow does that sound? Do you want to try the guessing game? 🌹"
+    },
+    {
+      "testId": 7,
+      "grade": 2,
+      "subject": "Mathematics",
+      "chapter": "Chapter 1 (Day at the Beach)",
+      "query": "explain a day at the beach in maths",
+      "expectedBook": "Joyful-Mathematics",
+      "latencyMs": 33630,
+      "citationCount": 3,
+      "citations": [
+        "Class_02 | Mathematics | Joyful-Mathematics__English_ | pages 8",
+        "Class_02 | Mathematics | Joyful-Mathematics__English_ | pages 7,8",
+        "Class_02 | Mathematics | Joyful-Mathematics__English_ | pages 7"
+      ],
+      "passed": true,
+      "aiResponse": "Oh, a day at the beach! 🏖️ That sounds like so much fun! You know, math is actually hiding everywhere, even when we are playing in the sand or jumping in the waves.\n\nLet’s imagine we are at the beach, and I’ll show you how we can use our \"Joyful Mathematics\" skills to explore it! 🌊\n\n**1. Counting the Sandcastles 🏰**\nImagine you and your friends are building sandcastles.\n*   You build **1** big castle.\n*   Your friend builds **2** small towers.\n*   Another friend builds **3** little sandmen.\n*   Can you add them up? $1 + 2 + 3 = 6$! You have made **6** things out of sand. This is great practice for **counting** and **addition**.\n\n**2. Shapes in the Sand ⛱️**\nLook at your beach umbrella. What shape is the top? It’s a **circle**! 🌞\nNow look at the pole holding it up. That’s a long, straight **line**.\nMaybe you draw a **square** in the sand with a stick.\nThe \"Joyful Mathematics\" book loves shapes! It helps us see the world around us. We can talk about **shapes** like circles, squares, and lines right there on the beach.\n\n**3. Measuring the Waves 🌊**\nThe waves are coming in!\n*   Is the first wave small?\n*   Is the second wave big?\n*   We can use our eyes to compare them. \"This wave is **taller** than that one!\"\n*   Or, if you have a ruler or a stick, you can measure how high the wave splashes. This is called **measurement**. We are learning how big or small things are.\n\n**4. Sharing Snacks 🍉**\nIt’s snack time! You have **4** slices of watermelon.\nYou want to share them with **2** friends.\n*   How many slices does each person get?\n*   You give **1** slice to your first friend and **1** slice to your second friend.\n*   You keep **2** slices for yourself.\n*   This is **division** and **sharing**. It’s a very important math skill!\n\n**5. Patterns in the Seashells 🐚**\nYou find some shells.\n*   You pick up a **round** shell.\n*   Then a **pointy** shell.\n*   Then a **round** shell again.\n*   Then a **pointy** shell.\n*   Do you see a pattern? **Round, Pointy, Round, Pointy...**\n*   What comes next? A **round** shell!\n*   Finding patterns helps our brains think logically, just like the math games in your book.\n\n**Why is this \"Joyful\" Math?**\nRemember, in your \"Joyful Mathematics\" book, they say math is not just about numbers in a book. It’s about **playing** and **exploring**. [2]\nWhen you are at the beach, you are using your hands (concrete), your eyes (pictorial), and your brain (abstract) to learn math. That’s exactly what the book wants you to do! [3]\n\nSo, next time you go to the beach, look for:\n*   **Numbers** (How many crabs?)\n*   **Shapes** (What shape is the sandcastle?)\n*   **Measurements** (How far can you throw the ball?)\n*   **Patterns** (What do the waves look like?)\n\nMath is everywhere, even at the beach! 🏖️📐 Have fun exploring!"
+    },
+    {
+      "testId": 8,
+      "grade": 2,
+      "subject": "Mathematics",
+      "chapter": "Chapter 4 (Counting Diyas)",
+      "query": "teach me counting diyas in maths",
+      "expectedBook": "Joyful-Mathematics",
+      "latencyMs": 33825,
+      "citationCount": 4,
+      "citations": [
+        "Class_02 | Mathematics | Joyful-Mathematics__English_ | pages 8",
+        "Class_02 | Mathematics | Joyful-Mathematics__English_ | pages 7",
+        "Class_02 | Mathematics | Joyful-Mathematics__English_ | pages 7,8",
+        "Class_02 | Mathematics | Joyful-Mathematics__English_ | pages 9"
+      ],
+      "passed": true,
+      "aiResponse": "Hi there! 🌟 I am so happy you want to learn about \"Counting Diyas\" from your **Joyful Mathematics** book! It is a really fun chapter because it combines math with the beautiful lights we see during festivals. 🪔✨\n\nSince I don't have the specific pages from your book in front of me right now, I will teach you the **big ideas** that this chapter is all about, using simple steps and fun examples!\n\n### 🪔 What is \"Counting Diyas\" About?\n\nIn this chapter, you learn how to count things in groups. Instead of counting one by one (1, 2, 3...), you learn to count by **2s, 5s, and 10s**. This makes counting much faster and easier!\n\n#### 1. Counting by 2s (Pairs)\nImagine you have a row of diyas. If you put them in pairs (two together), you can count them quickly!\n*   **How to do it:** Point to the first pair, say \"2\". Point to the next pair, say \"4\". Then \"6\", \"8\", \"10\"...\n*   **Why it helps:** It’s like counting your fingers on both hands! One hand has 5, two hands have 10. So, counting by 2s is like adding 2 each time.\n\n#### 2. Counting by 5s\nThis is super easy because we have 5 fingers on one hand!\n*   **How to do it:** Hold up one hand. Say \"5\". Hold up the other hand. Say \"10\".\n*   **Pattern:** 5, 10, 15, 20, 25...\n*   **Fun Tip:** Look at a clock! The numbers 5, 10, 15, 20, 25, 30, 35, 40, 45, 50 are all multiples of 5. You can count the minutes on a clock by 5s! ⏰\n\n#### 3. Counting by 10s\nThis is the fastest way to count!\n*   **How to do it:** 10, 20, 30, 40, 50...\n*   **Real Life:** If you have 10 rupee coins, and you have 3 of them, you have 30 rupees! You just count by 10s.\n\n### 🎮 Let’s Play a Game! (Like in your book)\n\nYour **Joyful Mathematics** book loves games! Here is a simple game you can play at home with a parent or friend:\n\n**\"Diya Jump\"**\n1.  Draw 20 circles on a piece of paper.\n2.  Draw a little diya in each circle.\n3.  Start at the first diya.\n4.  **Jump by 2s:** Land on the 2nd, 4th, 6th diya... and say the numbers out loud!\n5.  **Jump by 5s:** Start again! Land on the 5th, 10th, 15th, 20th diya.\n6.  **Jump by 10s:** Land on the 10th and 20th diya.\n\n### 💡 Why is this important?\n\n*   **It makes big numbers easy:** Counting 100 diyas one by one takes a long time. But counting by 10s (10, 20, 30... 100) is quick!\n*   **It helps with money:** When you buy things, you often count by 5s and 10s.\n*   **It helps with time:** Reading a clock is all about counting by 5s!\n\n### 📚 A Little Note from Your Book\n\nYour **Joyful Mathematics** textbook says that math should be **joyful**! 🎉 It uses stories, games, and activities to help you learn. So, if you see a page with diyas, try to:\n*   **Look** at the picture.\n*   **Count** the diyas in groups.\n*   **Play** with the numbers.\n\nYou are doing a great job! 🌟 Would you like to try a quick counting challenge with me? I can give you a small group of diyas (using emojis) and you can count them by 2s or 5s! 🪔🪔🪔"
+    },
+    {
+      "testId": 9,
+      "grade": 3,
+      "subject": "English",
+      "chapter": "Chapter 1 (Colours)",
+      "query": "teach me first chapter in english",
+      "passed": false,
+      "error": "Local model request failed (HTTP 429). Check the configured endpoint and model name."
+    },
+    {
+      "testId": 10,
+      "grade": 3,
+      "subject": "English",
+      "chapter": "Chapter 2 (Badal and Moti)",
+      "query": "teach me chapter 2 badal and moti in english",
+      "expectedBook": "Santoor",
+      "latencyMs": 2506,
+      "citationCount": 5,
+      "citations": [
+        "Class_03 | English | Santoor | pages 32,33,34",
+        "Class_03 | English | Santoor | pages 33,34,35",
+        "Class_03 | English | Santoor | pages 30,31,32,33",
+        "Class_03 | English | Santoor | pages 36,37",
+        "Class_03 | English | Santoor | pages 6"
+      ],
+      "passed": true,
+      "aiResponse": "Hello! I am so happy to help you with **Chapter 2: Badal and Moti** from your English book, *Santoor*! 📚✨ This is a really sweet story about friendship. Let’s read through it together step-by-step.\n\nHere is the story of Badal and Moti:\n\n**1. Meeting the Puppy** 🐶\nThere was a boy named **Badal**. He lived in a village with his mother, and they were very happy. One evening, when Badal was coming home from school, he saw a small puppy shivering (shaking) in the cold by the side of the road. [3]\n\n**2. Bringing Moti Home** 🏠\nBadal felt sorry for the puppy and brought him home. He asked his mother, “Maa, can this puppy stay with us?”\nHis mother smiled and said, “Yes, beta, but only if you promise to take care of the puppy.”\nBadal and his mother gave the puppy a name: **Moti**. [3]\n\n**3. Best Friends** 🤝\nAs days went by, Moti grew up. He loved Badal very much. They became **best friends**. They ate together, played together, and Moti followed Badal wherever he went. They played their favourite games together. [1][3]\n\n**4. The Rainy Day Accident** 🌧️\nOne rainy day, Badal was on his way home from school. The lane was muddy, so Badal slipped and fell into a **deep pit**. He tried hard to climb out, but he couldn’t.\nBadal’s mother was very worried because he didn’t come home on time. Moti was also waiting at the gate, waiting for his friend. [1]\n\n**5. Moti Saves Badal** 🦮\nBadal’s mother called the neighbours to help search for him. Moti went with them.\nSuddenly, Moti caught Badal’s **scent** (smell). He followed the scent to the pit and started **barking** loudly.\nThe barking alerted the neighbours! They saw where Moti was barking, used a rope, and pulled Badal out of the pit. [1]\n\n**6. A Happy Ending** ❤️\nEveryone was relieved (happy and safe). Badal hugged Moti and thanked him for saving his life. [1][2]\n\n***\n\n### 🧠 Let’s Check Your Understanding!\nHere are a few simple questions from your book to see if you remember the story. Can you try to answer them?\n\n1.  Where did Badal find the puppy? [3]\n2.  What did Badal and his mother name the puppy? [2]\n3.  What did Badal fall into on the rainy day? [2]\n4.  How did Moti help the neighbours find Badal? [2]\n\n**Bonus True or False:**\n*   Badal lived with his grandmother. (True or False?)\n*   Moti caught Badal’s scent. (True or False?)\n*   Badal hugged Moti and thanked him. (True or False?) [2]\n\nYou are doing a great job reading! 🌟 If you want, I can help you with the answers, or we can talk about what *you* would do if you found a puppy like Badal did. What do you think? 😊"
+    },
+    {
+      "testId": 11,
+      "grade": 3,
+      "subject": "Mathematics",
+      "chapter": "Chapter 2 (Toy Joy)",
+      "query": "help me with toy joy in maths",
+      "passed": false,
+      "error": "Local model request failed (HTTP 429). Check the configured endpoint and model name."
+    },
+    {
+      "testId": 12,
+      "grade": 3,
+      "subject": "Mathematics",
+      "chapter": "Chapter 5 (Shapes & Patterns)",
+      "query": "help me with shapes and patterns in math",
+      "expectedBook": "Maths_Mela",
+      "latencyMs": 1921,
+      "citationCount": 5,
+      "citations": [
+        "Class_03 | Mathematics | Maths_Mela | pages 67,68,69",
+        "Class_03 | Mathematics | Maths_Mela | pages 25,26,27",
+        "Class_03 | Mathematics | Maths_Mela | pages 71,72,73",
+        "Class_03 | Mathematics | Maths_Mela | pages 69,70",
+        "Class_03 | Mathematics | Maths_Mela | pages 4,5"
+      ],
+      "passed": true,
+      "aiResponse": "Hi there! 🌟 I would love to help you with shapes and patterns. That is one of the most fun parts of Maths Mela!\n\nSince you are in Standard 3, let’s look at some cool things you can do with shapes, just like in your textbook.\n\n**1. Playing with Squares and Corners** 📐\nDo you know what a \"square corner\" is? It’s the corner that looks like the letter **L**.\n*   **Activity:** In your book, there is a fun activity where you can use matchsticks to make square corners. Can you try making one square corner with just **two** matchsticks? 🪄\n*   **Challenge:** Can you make **four** square corners using only two matchsticks? (Hint: Think about how the matchsticks can cross or touch!) [3]\n\n**2. Building Shapes** 🏗️\nShapes can be put together to make new things!\n*   **Squares:** You can join 2, 3, or 4 squares together to make different shapes. It’s like building with LEGO blocks! You can show these shapes on a dot grid. [1]\n*   **Triangles:** If you cut a square into 4 triangles, you can join them back together in different ways to make new shapes. How many different shapes can you make using 3 triangles? [1]\n\n**3. Real-World Shapes** 🚂\nLook around you!\n*   A toy engine might have red cylinders, yellow cones, and grey cuboids. [2]\n*   A cube is a special kind of cuboid. [2]\n*   Can you find objects in your class that have only square corners? Maybe a book or a tile? [4]\n\n**Let’s try a little game!**\nIf I give you 4 squares, can you tell me how many different shapes you can make by joining them together? You can try drawing them or using blocks! 🧩\n\nWhat shape are you working on right now? Or do you want to try one of these activities? 😊"
+    },
+    {
+      "testId": 13,
+      "grade": 3,
+      "subject": "The World Around Us (EVS)",
+      "chapter": "Chapter 1 (Family and Friends)",
+      "query": "tell me about our family and home in evs",
+      "expectedBook": "Our_Wondrous_World",
+      "latencyMs": 5464,
+      "citationCount": 4,
+      "citations": [
+        "Class_03 | The_World_Around_Us | Our_Wondrous_World | pages 27,28",
+        "Class_03 | The_World_Around_Us | Our_Wondrous_World | pages 1,2",
+        "Class_03 | The_World_Around_Us | Our_Wondrous_World | pages 30,31,32",
+        "Class_03 | The_World_Around_Us | Our_Wondrous_World | pages 33,34,35"
+      ],
+      "passed": true,
+      "aiResponse": "Hello there! 🌟 I am so happy you asked about this. It is a very important part of your Class 3 EVS book, *Our Wondrous World*!\n\nThe chapter is called **\"Family and Friends\"** (which is part of the unit \"Staying Together\"). Let’s look at what the book tells us about families and homes. 🏠\n\n**1. Who is in our family?**\nYour family includes the people you live with, like your parents, siblings, and grandparents. But the book also reminds us that our family includes **relatives** who might not live with you, like uncles, aunts, cousins, and grandparents who live elsewhere. [3]\n\n**2. Everyone helps at home!**\nDid you know that in a family, everyone does some work? Just like in the story of Bela and Banku in the book, family members share the day-to-day work of the home. [3]\n*   **Think about this:** Who does what work in *your* family? Maybe your mom cooks, your dad fixes things, or you help set the table! [3]\n\n**3. Learning from each other**\nWe learn many things from our family members and neighbors. [1]\n*   **Activity Idea:** The book asks you to think about what you have learned from your family and from whom. Have you learned how to tie your shoes from your dad? Or how to draw from your sister? [1]\n*   **Helping out:** Some people in the family need special care, like grandparents or small children. The book encourages you to think about how you help them! [1]\n\n**4. Fun with Family and Friends**\nThe chapter also talks about how much fun we have with family and friends. There is a story about a holiday where kids went to the park with their Dadaji (grandfather) to play a game called *pitthoo* (a stone-piling game). They played together, laughed, and even ate ice cream! [3][4]\n*   **Reflection:** The book asks you to think about how family members show love and care for each other. [4]\n\n**5. Fun Activities from the Book**\n*   **Rangoli:** You can collect fallen leaves and flowers to make a rangoli! [1]\n*   **Word Search:** There is a word search puzzle with words related to games like **BALL**, **LUDO**, and **HAT**. [4]\n*   **Drawing:** You can draw some of the happy moments you enjoy with your family. [4]\n\n**Let’s try a little quiz! 🧠**\n1.  Who is the oldest person in your family? [1]\n2.  Name one relative who does not live with you. Where do they live? [1]\n3.  What is one thing you help with at home? [3]\n\nYou are doing a great job learning about your family! Is there a specific activity from the chapter you want to try, or do you want to talk more about how you help at home? 😊"
+    },
+    {
+      "testId": 14,
+      "grade": 3,
+      "subject": "Arts",
+      "chapter": "Music & Drawing",
+      "query": "teach me drawing and puppet making in arts bansuri",
+      "expectedBook": "Bansuri",
+      "latencyMs": 42859,
+      "citationCount": 5,
+      "citations": [
+        "Class_03 | Arts | Bansuri_-_I | pages 21,22,23",
+        "Class_03 | Arts | Bansuri_-_I | pages 159,160",
+        "Class_03 | Arts | Bansuri_-_I | pages 155,156,157",
+        "Class_03 | Arts | Bansuri_-_I | pages 35,36,37,38,39",
+        "Class_03 | Arts | Bansuri_-_I | pages 5"
+      ],
+      "passed": true,
+      "aiResponse": "Hello there, little artist! 🎨 I am so happy you want to learn about drawing and puppet making from your *Bansuri* Arts book! It is full of fun activities that help you use your imagination.\n\nLet’s look at what your book says about these exciting topics.\n\n### 🖍️ Drawing: Play with Lines and Objects\nIn the \"Objects in Art\" chapter, your book suggests a great way to start drawing [1]:\n\n1.  **Play with Lines:** Try scribbling on paper! Draw some lines quickly and some slowly.\n    *   Press a little to make **thick and dark** lines.\n    *   Draw gently to make **thin and light** lines.\n    *   Try making wavy, zigzag, dotted, or swirling lines!\n2.  **Draw Around You:** Look at objects in your room. Touch them and look at their shapes. Pick **three objects** with different shapes (like a cup, a ball, and a book) and draw them. Then, colour them in! [1]\n\n### 🎭 Puppet Making & Theatre\nYour *Bansuri* book also has a section on \"Integrating All Art Forms\" where you can learn about theatre and props [2][3].\n\n*   **Using Props:** You can use any object around you and improvise it as a prop for a story. For example, you can pretend a stick is a *bansuri* (flute) or a box is a house! [2]\n*   **Acting:** Imagine yourself as a musical instrument or a character. You can create simple movements to go with a song or story. [2]\n*   **Group Fun:** You can work in groups of 4–5 friends to act out a story. You can even make a \"forest\" in your classroom by making flowers and trees! [2]\n\n**A Quick Tip from Your Book:**\nRemember, in Arts, **there is no right or wrong answer!** All your ideas are awesome. Just have fun and enjoy the process of creating! [3]\n\nWould you like to try drawing a simple object from your room, or do you want to brainstorm a funny puppet story with your friends? 😊"
+    },
+    {
+      "testId": 15,
+      "grade": 3,
+      "subject": "Physical Education",
+      "chapter": "Yoga & Games",
+      "query": "teach me yoga poses and games in khel yoga",
+      "expectedBook": "Khel_Yoga",
+      "latencyMs": 20980,
+      "citationCount": 4,
+      "citations": [
+        "Class_03 | Physical_Education_and_Well_Being | Khel_Yoga | pages 123,124,125",
+        "Class_03 | Physical_Education_and_Well_Being | Khel_Yoga | pages 119,120,121",
+        "Class_03 | Physical_Education_and_Well_Being | Khel_Yoga | pages 3,4",
+        "Class_03 | Physical_Education_and_Well_Being | Khel_Yoga | pages 93,94"
+      ],
+      "passed": true,
+      "aiResponse": "Hello there! 🌟 I am so happy you want to learn about Yoga! It is a wonderful way to keep your body strong and your mind happy.\n\nIn your **Khel Yoga** book for Class 3, we learn that Yoga is like a journey with eight steps, called **Ashtanga Yoga**. The first two steps are **Yama** (good behavior, like being kind and not hurting others) and **Niyama** (self-discipline) [4].\n\nLet’s explore some fun poses and games from your book! 🧘‍♂️🎮\n\n### 🧘‍♂️ Fun Yoga Poses (Asanas)\nYour book mentions some great postures to try. Remember to keep your back straight and breathe slowly!\n*   **Tadasana** (Mountain Pose): Stand tall like a strong tree! 🌳\n*   **Utkatasana** (Chair Pose): Pretend you are sitting in an invisible chair.\n*   **Padahastasana** (Hand-to-Foot Pose): Try to touch your toes gently.\n*   **Eye Exercises**: Your book also has special games for your eyes, like moving your eyeballs in a circle slowly (without moving your neck!) and then relaxing them by covering your eyes with your warm palms (palming) [2].\n\n### 🎮 Fun Yoga Games (Krida Yoga)\nYoga isn't just about sitting still; it’s also about playing! Here are two fun games from your **Khel Yoga** book:\n\n1.  **Power of Breath** 🌬️\n    *   Sit in a circle with your friends.\n    *   One student takes a deep breath and starts running around the circle chanting a long \"Om\".\n    *   The next student starts from where the first one stopped.\n    *   This helps you learn to hold your breath longer and makes your voice strong! [1]\n\n2.  **Rishi Patanjali Says** 🗣️\n    *   Stand in a circle.\n    *   The teacher (or a leader) says \"Japa\" or \"Tapa\" randomly.\n    *   If you follow the instructions correctly, you stay in the game. If you get confused, you are out!\n    *   You can also play this with different sounds or eye exercises to make it even more fun. [1]\n\n3.  **Chain of Names** 📿\n    *   Sit in a circle.\n    *   The first student says their name.\n    *   The next student repeats the first student's name and adds their own.\n    *   Each student adds their name to the \"garland\" of names. It’s a great way to remember names and work together! [2]\n\n**💡 Tip for you:** Always listen to your body. If a pose feels too hard, just stop and rest. Yoga is about feeling good, not hurting!\n\nWhich game or pose do you want to try first? 😊🧘‍♀️"
+    },
+    {
+      "testId": 16,
+      "grade": 4,
+      "subject": "English",
+      "chapter": "Chapter 1 (Together We Can)",
+      "query": "teach me chapter 1 in english",
+      "expectedBook": "Santoor",
+      "latencyMs": 18648,
+      "citationCount": 1,
+      "citations": [
+        "Class_04 | English | Santoor | pages 17,18"
+      ],
+      "passed": true,
+      "aiResponse": "Hi there! I am happy to help you with your English lessons. 🌟\n\nHowever, I don't have the specific text for \"Chapter 1\" of your English textbook in front of me right now. To make sure I teach you exactly what is in your book, could you please tell me:\n1. What is the **title** of Chapter 1?\n2. Or, you can paste the first few lines of the story or poem here.\n\nOnce you share that, I can help you understand the new words, answer questions, and practice reading it! 😊📚"
+    },
+    {
+      "testId": 17,
+      "grade": 4,
+      "subject": "English",
+      "chapter": "Chapter 6 (Braille)",
+      "query": "teach me about braille in english",
+      "expectedBook": "Santoor",
+      "latencyMs": 2667,
+      "citationCount": 3,
+      "citations": [
+        "Class_04 | English | Santoor | pages 73,74,75",
+        "Class_04 | English | Santoor | pages 75,76,77",
+        "Class_04 | English | Santoor | pages 54,55"
+      ],
+      "passed": true,
+      "aiResponse": "Hi there! 😊 I am so glad you want to learn about Braille. It is a really cool way to read and write!\n\nHere is a simple way to understand it, based on your **Santoor** textbook:\n\n**What is Braille?**\nBraille is a special alphabet made up of **raised dots**. Instead of seeing letters with your eyes, people with blindness use their **fingertips** to feel the dots and read the words. 🖐️\n\n**How does it work?**\nImagine a small card with tiny bumps on it. Each letter of the alphabet has its own unique pattern of dots. When you run your finger over the bumps, you can tell which letter it is! [1]\n\n**Who invented it?**\nA very smart boy named **Louis Braille** invented it. He lived in France a long time ago. He wanted to make reading easier for blind people. [1]\n\n**Fun Fact:**\nYou don’t have to be blind to learn Braille! People who can see can learn it too. They can even write small poems and stories in Braille. [1]\n\n**Let’s Try a Little Activity!** 🧠\nIn your book, there is a \"Let us Think\" section. Try this:\n1. Close your eyes. 👀\n2. Pick up a small object (like a toy car or a spoon).\n3. Feel it with your hand.\n4. Tell me:\n   * What shape was it?\n   * Was it longer or shorter than your forefinger?\n\nThis helps you understand how important our sense of touch is, just like how Braille uses touch to read!\n\nWould you like to try writing a simple word in Braille, or do you have any questions about Louis Braille? 🌟"
+    },
+    {
+      "testId": 18,
+      "grade": 4,
+      "subject": "Mathematics",
+      "chapter": "Chapter 1 (Finding Symmetry)",
+      "query": "teach me finding symmetry in math",
+      "expectedBook": "Math-Mela",
+      "latencyMs": 11959,
+      "citationCount": 1,
+      "citations": [
+        "Class_04 | Mathematics | Math-Mela | pages 4,5"
+      ],
+      "passed": true,
+      "aiResponse": "Hi there! 🌟 I am so happy you want to learn about symmetry. It is one of the coolest parts of Math-Mela!\n\nSince you are in Standard 4, let’s make this super fun and easy to understand. 🎈\n\n### What is Symmetry?\n\nImagine you have a butterfly. 🦋 If you draw a straight line right down the middle of its body, the left wing looks exactly like the right wing. They are like mirror images of each other!\n\nIn math, we call that straight line the **Line of Symmetry**.\n\nA shape has **line symmetry** (or reflectional symmetry) if you can fold it along a line so that the two halves match up perfectly. ✂️📄\n\n### How to Find Symmetry: A Simple 3-Step Game\n\nLet’s play a \"Fold and Check\" game!\n\n1.  **Pick a Shape:** Let’s use a **Heart** ❤️ for now.\n2.  **Guess the Line:** Where do you think the middle line is? For a heart, it’s usually straight down the center.\n3.  **Fold and Check:**\n    *   Imagine folding the paper in half along that line.\n    *   Does the left side land exactly on top of the right side?\n    *   **Yes!** ✅ That means the heart has **1 line of symmetry**.\n\n### Let’s Try Some Shapes Together!\n\nHere are some shapes you might see in your Math-Mela book or around the house. Can you guess how many lines of symmetry they have?\n\n| Shape | How many lines of symmetry? | Why? |\n| :--- | :---: | :--- |\n| **Equilateral Triangle** (all sides equal) 📐 | **3** | You can fold it 3 different ways, and it always matches! |\n| **Square** 🟦 | **4** | You can fold it horizontally, vertically, and along both diagonals. |\n| **Rectangle** 🟩 | **2** | You can fold it horizontally and vertically, but *not* along the diagonals. |\n| **Circle** ⚪ | **Infinite** (Countless!) | You can fold a circle along *any* line through the center, and it always matches. |\n| **Scalene Triangle** (all sides different) 📐 | **0** | No matter how you fold it, the corners don’t match up. |\n\n### Fun Real-World Examples! 🌍\n\nSymmetry is everywhere! Look around you:\n*   **Your Face:** (If you close one eye, the other side looks like a mirror of the first!) 👀\n*   **Butterflies** 🦋\n*   **Snowflakes** ❄️\n*   **Your Hands:** Hold your palms up. Your left hand is a mirror image of your right hand! ✋\n*   **Letters:** The letter **A** has 1 line of symmetry. The letter **B** has 1. The letter **E** has 1. But the letter **S** has **0** lines of symmetry!\n\n### Quick Challenge for You! 🧠\n\nTry this at home:\n1.  Take a piece of paper.\n2.  Draw a simple shape (like a star ⭐ or a diamond 🔷).\n3.  Fold it to find the lines of symmetry.\n4.  Count how many times it matches perfectly!\n\n**Remember:**\n*   **Line of Symmetry** = The \"fold line\" where both sides match.\n*   If it matches when folded, it’s **symmetric**! ✅\n*   If it doesn’t match, it’s **asymmetric**. ❌\n\nYou are doing a great job exploring math! Do you want to try finding symmetry in a specific shape, or do you have a question about a shape you saw in your book? 😊📚"
+    },
+    {
+      "testId": 19,
+      "grade": 4,
+      "subject": "Mathematics",
+      "chapter": "Chapter 3 (Trip to Bhopal)",
+      "query": "tell me about trip to bhopal in maths",
+      "expectedBook": "Math-Mela",
+      "latencyMs": 42423,
+      "citationCount": 1,
+      "citations": [
+        "Class_04 | Mathematics | Math-Mela | pages 1,2"
+      ],
+      "passed": true,
+      "aiResponse": "Hi there! 🌟 I’d love to help you with your Math-Mela questions!\n\nHowever, I don’t see a specific story or problem about a \"trip to Bhopal\" in the information I have right now. In Class 4 Maths, we often use real-life situations like trips, shopping, or games to practice things like:\n\n*   **Addition and Subtraction** (counting money or distance)\n*   **Multiplication and Division** (sharing snacks or calculating total cost)\n*   **Time** (figuring out when a train arrives or how long a journey takes)\n*   **Measurement** (measuring distance in kilometers)\n\nCould you tell me a little more about the problem? For example:\n*   Is it about calculating the **distance** between cities?\n*   Is it about **money** spent on tickets or food?\n*   Is it about **time** (like, \"The train left at 9:00 AM and arrived at 2:00 PM. How long was the trip?\")?\n\nIf you can share the specific question or numbers from your textbook, I’ll be happy to walk through the steps with you! 🚂📚"
+    },
+    {
+      "testId": 20,
+      "grade": 4,
+      "subject": "The World Around Us (EVS)",
+      "chapter": "Chapter 1 (Living Together)",
+      "query": "teach me living together in science evs",
+      "expectedBook": "Our_Wonderous_World",
+      "latencyMs": 3390,
+      "citationCount": 1,
+      "citations": [
+        "Class_04 | The_World_Around_Us | Our_Wonderous_World | pages 3,4"
+      ],
+      "passed": true,
+      "aiResponse": "Hi there! 🌟 I’d love to help you explore the \"Living Together\" chapter from your EVS book, *Our Wonderous World*!\n\nHowever, I don’t have the specific text from that chapter in front of me right now. To make sure I teach you exactly what is in your textbook, could you tell me a little bit about what you are studying in that unit? For example:\n\n*   Are you learning about how different people in a community help each other? 🤝\n*   Are you reading about how we share public places like parks or markets? 🏞️\n*   Or is it about how we respect different cultures and traditions? 🎉\n\nIf you can share a sentence or two from your book or tell me the main topic, I can explain it to you using fun examples and simple steps! 😊"
+    },
+    {
+      "testId": 21,
+      "grade": 4,
+      "subject": "The World Around Us (EVS)",
+      "chapter": "Chapter 3 (Nature Trail)",
+      "query": "tell me about nature trail in science",
+      "expectedBook": "Our_Wonderous_World",
+      "latencyMs": 1744,
+      "citationCount": 3,
+      "citations": [
+        "Class_04 | The_World_Around_Us | Our_Wonderous_World | pages 5,6",
+        "Class_04 | The_World_Around_Us | Our_Wonderous_World | pages 3,4",
+        "Class_04 | Mathematics | Math-Mela | pages 219,220"
+      ],
+      "passed": true,
+      "aiResponse": "Hello there! 🌿 I am so glad you asked about the **Nature Trail**! It is one of the most fun parts of your *The World Around Us* (EVS) textbook, *Our Wonderous World*.\n\nBased on your textbook, here is what you need to know:\n\n**1. Where is it found?**\nThe \"Nature Trail\" is a special chapter in **Unit 2**, which is called **\"Life Around Us\"** [1].\n\n**2. What is it about?**\nThe Nature Trail helps you understand why it is so important to **conserve resources** (like water, trees, and soil) so that we can live in a balanced and harmonious way with nature [1]. Think of it like a treasure hunt where you learn how to take care of our planet while exploring! 🌍\n\n**3. How do you learn in this chapter?**\nJust like other chapters in your book, the Nature Trail chapter includes:\n*   **Interactive dialogues or stories** to get you excited.\n*   **Observation and inference activities** (looking closely and guessing what you see).\n*   **Field visits and exploration** (going outside to look at real things in nature).\n*   **Puzzles and riddles** to make learning feel like a game! 🧩\n\nIt is designed to be very child-friendly and encourages you to actively participate in learning by exploring the world right outside your classroom door. 🌳🔍\n\nDo you have a favorite part of nature you like to explore?"
+    },
+    {
+      "testId": 22,
+      "grade": 4,
+      "subject": "Arts",
+      "chapter": "Visual Art & Drama",
+      "query": "teach me acting and rhythm in arts bansuri",
+      "expectedBook": "Bansuri",
+      "latencyMs": 12939,
+      "citationCount": 2,
+      "citations": [
+        "Class_04 | Arts | Bansuri | pages 4,5",
+        "Class_04 | Arts | Bansuri | pages 178,179,180"
+      ],
+      "passed": true,
+      "aiResponse": "Hi there! 🎭 I am so happy you want to learn about acting and rhythm from your **Bansuri** book! Arts is all about having fun and expressing yourself.\n\nSince I don't have the specific pages for \"Acting\" or \"Rhythm\" in front of me right now, I can’t quote the exact activities from your book. However, I can help you understand these concepts using simple, fun examples that are likely similar to what you find in **Bansuri** for Grade 4! 🎶🎭\n\n### 1. What is Acting? 🎭\nActing is when you use your body, face, and voice to show a character or a story. It’s like being a puppet or an actor in a play!\n\n**Fun Ways to Practice Acting:**\n*   **Face Expressions:** Try making your face show different feelings. Can you look *happy*, *surprised*, *angry*, or *scared*? Practice in front of a mirror! 🪞\n*   **Body Language:** How does a tired person walk? (Slow, heavy steps). How does an excited person walk? (Bouncy, fast steps)? Try walking around your room in different ways.\n*   **Voice:** Can you speak like a tiny mouse? (High and quiet). Can you speak like a big bear? (Low and loud)?\n\n**Activity Idea:**\nPick a simple story, like \"The Old Stag\" from your English book (Santoor). Can you act out how the stag feels when he is proud? How does he feel when he is in danger? Use your hands and face to show it!\n\n### 2. What is Rhythm? 🥁\nRhythm is the beat or pattern of sound. It’s like the heartbeat of music. You feel it when you clap, tap your feet, or dance.\n\n**Fun Ways to Practice Rhythm:**\n*   **Clapping Patterns:** Let’s try a simple 4-beat rhythm (which is common in dance, as seen in your Bansuri book [2]).\n    *   Clap once: **1**\n    *   Clap twice: **2**\n    *   Clap three times: **3**\n    *   Clap four times: **4**\n    *   Now try clapping: **1, 2, 3, 4** (steady and even).\n*   **Body Percussion:** You are your own instrument!\n    *   Stomp your feet on the beat.\n    *   Clap your hands on the beat.\n    *   Try: Stomp, Stomp, Clap, Clap!\n*   **Walking to the Beat:** Walk slowly and stomp your feet to a steady rhythm. This helps with coordination, just like the bird formations in your book [2].\n\n**Activity Idea:**\nStand up and try to move your body to a 4-beat rhythm.\n*   Beat 1: Step right foot.\n*   Beat 2: Step left foot.\n*   Beat 3: Clap hands.\n*   Beat 4: Clap hands.\n*   Repeat! This is a simple dance step.\n\n### Combining Acting and Rhythm 🌟\nThe best part is when you do both together!\n1.  Choose a character (e.g., a happy bird).\n2.  Move your body to a steady 4-beat rhythm.\n3.  Use your face to show that you are a happy bird.\n4.  Try flapping your arms (like wings) on the beat!\n\nThis is similar to the \"Bird Flight Formations\" activity in your Bansuri book [2], where you coordinate your movements with your group.\n\nWould you like to try a specific rhythm pattern or act out a small scene together? Let me know! 😊"
+    },
+    {
+      "testId": 23,
+      "grade": 4,
+      "subject": "Physical Education",
+      "chapter": "Yoga & Movement",
+      "query": "teach me breathing and posture in khel yoga",
+      "expectedBook": "Khel_Yoga",
+      "latencyMs": 9281,
+      "citationCount": 3,
+      "citations": [
+        "Class_04 | Physical_Education_and_Well_Being | Khel_Yoga | pages 109,110,111",
+        "Class_04 | Physical_Education_and_Well_Being | Khel_Yoga | pages 115,116",
+        "Class_04 | Physical_Education_and_Well_Being | Khel_Yoga | pages 129,130"
+      ],
+      "passed": true,
+      "aiResponse": "Hello there! 🌟 I am so happy you want to learn about breathing and posture from your **Khel Yoga** book. It is a great way to feel calm and strong!\n\nHere is a simple, step-by-step guide based on your textbook [2] and [3]:\n\n### 1. The Right Posture (How to Sit) 🧘‍♂️\nBefore you start breathing, you need to sit comfortably. Your book suggests sitting in **Sukhasana** (a comfortable cross-legged position) or **Padmasana** (lotus position).\n\n*   **Back:** Keep your back straight. Imagine a string pulling the top of your head up to the sky! 🎈\n*   **Head:** Keep your head upright.\n*   **Eyes:** Close your eyes gently to help you focus.\n*   **Hands:** Place your hands in **Chin Mudra**. This means touching the tips of your thumbs and index fingers together, while the other three fingers are relaxed. 🖐️\n\n### 2. Deep Breathing Practice 🌬️\nOnce you are sitting nicely, let’s practice **Deep Breathing** [2]:\n\n*   **Step 1:** Sit in your chosen posture with your back straight and eyes closed.\n*   **Step 2:** Breathe in and breathe out **slowly through your nose**. Do not use your mouth!\n*   **Step 3:** As you breathe, watch your chest and tummy (abdomen). You will see them rise and fall. This helps you notice your breath.\n*   **Step 4:** Try this for **five rounds** (5 breaths in and out).\n\n### 3. A Special Touch: Chanting 'Om' 🕉️\nYour book also mentions a lovely way to start or end your yoga session [3]:\n\n*   Take a deep, slow breath in.\n*   As you breathe out slowly, gently chant the sound **‘Om’**.\n*   Notice how it feels to make that sound. It helps calm the mind.\n\n### 💡 Teacher’s Tip for You:\n*   Try to stay **still** while you breathe. No wiggling!\n*   If you feel tired, that’s okay. Yoga helps relieve tiredness and calms your mind [2].\n\nWould you like to try sitting in Sukhasana and doing 5 deep breaths right now? I can guide you through it! 😊"
+    }
+  ]
+}

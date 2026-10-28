@@ -105,3 +105,11 @@ export async function getChatHealth() {
   if (!response.ok) throw new Error(`Chat service returned HTTP ${response.status}.`);
   return response.json();
 }
+
+export function transcribeAudio(audioBase64, format = 'webm') {
+  return request('/api/audio/transcribe', {
+    method: 'POST',
+    body: { audio: audioBase64, format }
+  });
+}
+

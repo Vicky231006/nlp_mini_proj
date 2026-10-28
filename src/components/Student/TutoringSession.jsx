@@ -8,6 +8,7 @@ import {
   updateClassStandard
 } from '../../accountApi';
 import MessageMarkdown from './MessageMarkdown';
+import { SpeechRecorder, TutorSpeaker } from './speechService.js';
 
 const MAX_CONTEXT_MESSAGES = 40;
 const MAX_MESSAGE_LENGTH = 8_000;
@@ -24,6 +25,20 @@ function createDraft() {
 
 function QueryInput({ onSend, isLoading }) {
   const [inputText, setInputText] = useState('');
+  const [recordingStatus, setRecordingStatus] = useState('idle');
+  const [audioError, setAudioError] = useState(null);
+  const recorderRef = useRef(null);
+
+  useEffect(() => {
+    recorderRef.current = new SpeechRecorder({
+      onTranscript: (text) => {
+        setInputText((prev) => (prev ? `${prev} ${text}` : text));
+        setAudioError(null);
+      },
+      onStatusChange: (status) => setRecordingStatus(status),
+      onError: (err) => setAudioError(err)
+    });
+  }, []);
 
   const handleSend = () => {
     const query = inputText.trim();
@@ -33,8 +48,42 @@ function QueryInput({ onSend, isLoading }) {
     }
   };
 
+  const toggleVoiceRecord = async () => {
+    if (recordingStatus === 'recording') {
+      await recorderRef.current?.stop();
+    } else if (recordingStatus === 'idle') {
+      setAudioError(null);
+      await recorderRef.current?.start();
+    }
+  };
+
   return (
     <div className="space-y-3 border-t-2 border-slate-900 bg-white p-4">
+      {recordingStatus === 'recording' && (
+        <div className="flex items-center justify-between rounded-lg border-2 border-red-900 bg-red-100 px-3 py-2 text-xs font-black text-red-900 animate-pulse">
+          <div className="flex items-center gap-2">
+            <span className="h-2.5 w-2.5 rounded-full bg-red-600 animate-ping"></span>
+            <span>🎙️ Listening to your voice… Speak clearly!</span>
+          </div>
+          <button
+            type="button"
+            onClick={toggleVoiceRecord}
+            className="rounded border border-red-900 bg-white px-2 py-0.5 text-xs font-black text-red-900 hover:bg-red-50"
+          >
+            Finish Speaking
+          </button>
+        </div>
+      )}
+      {recordingStatus === 'transcribing' && (
+        <div className="flex items-center gap-2 rounded-lg border-2 border-amber-900 bg-amber-100 p-2 text-xs font-bold text-amber-900">
+          <span className="animate-spin text-sm">🔄</span>
+          <span>Whisper is transcribing your speech…</span>
+        </div>
+      )}
+      {audioError && (
+        <p role="alert" className="text-xs font-bold text-red-700">{audioError}</p>
+      )}
+
       <div className="flex items-center gap-2">
         <input
           type="text"
@@ -48,6 +97,37 @@ function QueryInput({ onSend, isLoading }) {
           disabled={isLoading}
           className="min-w-0 flex-grow rounded-lg border-2 border-slate-900 bg-amber-50 p-3 text-sm font-semibold outline-none focus:ring-2 focus:ring-amber-400"
         />
+        <button
+          type="button"
+          onClick={toggleVoiceRecord}
+          disabled={isLoading || recordingStatus === 'transcribing'}
+          aria-label={recordingStatus === 'recording' ? 'Finish voice recording' : 'Speak using microphone'}
+          title={recordingStatus === 'recording' ? 'Click to transcribe audio' : 'Speak your question (Whisper STT)'}
+          className={`flex items-center gap-1.5 rounded-lg border-2 border-slate-900 px-3 py-3 text-sm font-black transition-all ${
+            recordingStatus === 'recording'
+              ? 'animate-pulse bg-red-600 text-white shadow-[2px_2px_0px_#0f172a]'
+              : recordingStatus === 'transcribing'
+                ? 'bg-amber-300 text-slate-900 cursor-wait'
+                : 'bg-white text-slate-800 shadow-[2px_2px_0px_#0f172a] hover:bg-amber-100'
+          } disabled:opacity-50`}
+        >
+          {recordingStatus === 'recording' ? (
+            <>
+              <span>⏹️</span>
+              <span className="hidden sm:inline">Done</span>
+            </>
+          ) : recordingStatus === 'transcribing' ? (
+            <>
+              <span className="animate-spin">🔄</span>
+              <span className="hidden sm:inline">Transcribing…</span>
+            </>
+          ) : (
+            <>
+              <span>🎙️</span>
+              <span className="hidden sm:inline">Speak</span>
+            </>
+          )}
+        </button>
         <button
           type="button"
           onClick={handleSend}
@@ -77,8 +157,19 @@ const TutoringSession = ({ learnerClass = null, onLearnerClassChange = null }) =
   const [editingChatId, setEditingChatId] = useState(null);
   const [draftTitle, setDraftTitle] = useState('');
   const [isRenaming, setIsRenaming] = useState(false);
+  const [speakerState, setSpeakerState] = useState({ speaking: false, activeMessageId: null });
   const messagesContainerRef = useRef(null);
   const renameGuardRef = useRef(false);
+  const speakerRef = useRef(null);
+
+  useEffect(() => {
+    speakerRef.current = new TutorSpeaker({
+      onStateChange: setSpeakerState
+    });
+    return () => {
+      speakerRef.current?.stop();
+    };
+  }, []);
   const activeChat = chats.find((chat) => chat.id === activeChatId);
   const messages = activeChat?.messages || [];
 
@@ -363,17 +454,30 @@ const TutoringSession = ({ learnerClass = null, onLearnerClassChange = null }) =
       <section className="flex h-[calc(100vh-220px)] min-h-[540px] flex-col overflow-hidden rounded-xl border-2 border-slate-900 bg-white shadow-[3px_3px_0px_#0f172a] lg:col-span-3">
         <div className="flex items-center justify-between gap-3 border-b-2 border-slate-900 bg-red-600 px-5 py-4 text-white">
           <h3 className="text-base font-black tracking-wide">💬 {activeChat?.title || 'Tutoring chat'}</h3>
-          <span className="rounded-full border border-white/70 bg-white/15 px-3 py-1 text-xs font-bold" aria-live="polite">
-            {serviceStatus === 'connecting'
-              ? 'Thinking…'
-              : serviceStatus === 'connected'
-                ? 'Connected'
-                : serviceStatus === 'unconfigured'
-                  ? 'Tutor needs setup'
-                  : serviceStatus === 'unavailable'
-                    ? 'Service unavailable'
-                    : `${providerName} ready`}
-          </span>
+          <div className="flex items-center gap-2">
+            {speakerState.speaking && (
+              <button
+                type="button"
+                onClick={() => speakerRef.current?.stop()}
+                className="flex items-center gap-1 rounded-full border border-white bg-white/20 px-3 py-1 text-xs font-black text-white hover:bg-white/30"
+                title="Stop voice playback"
+                aria-label="Stop reading aloud"
+              >
+                ⏹️ Stop voice
+              </button>
+            )}
+            <span className="rounded-full border border-white/70 bg-white/15 px-3 py-1 text-xs font-bold" aria-live="polite">
+              {serviceStatus === 'connecting'
+                ? 'Thinking…'
+                : serviceStatus === 'connected'
+                  ? 'Connected'
+                  : serviceStatus === 'unconfigured'
+                    ? 'Tutor needs setup'
+                    : serviceStatus === 'unavailable'
+                      ? 'Service unavailable'
+                      : `${providerName} ready`}
+            </span>
+          </div>
         </div>
 
         <div ref={messagesContainerRef} className="min-h-0 flex-grow space-y-4 overflow-y-auto overscroll-y-contain bg-sky-50/50 p-5" aria-live="polite">
@@ -389,7 +493,33 @@ const TutoringSession = ({ learnerClass = null, onLearnerClassChange = null }) =
                   : 'bg-white font-medium text-slate-800 shadow-[2px_2px_0px_#0f172a]'
               }`}>
                 {message.role === 'assistant' ? (
-                  <MessageMarkdown content={message.content} />
+                  <>
+                    <MessageMarkdown content={message.content} />
+                    <div className="flex items-center justify-between border-t border-slate-200 pt-2 text-xs">
+                      <button
+                        type="button"
+                        onClick={() => speakerRef.current?.speak(message.content, `msg-${index}`)}
+                        className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 font-bold transition-colors ${
+                          speakerState.speaking && speakerState.activeMessageId === `msg-${index}`
+                            ? 'bg-amber-300 text-slate-900 border border-slate-900'
+                            : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                        }`}
+                        title="Read aloud in a friendly tutor voice"
+                        aria-label={speakerState.speaking && speakerState.activeMessageId === `msg-${index}` ? 'Stop reading' : 'Read answer aloud'}
+                      >
+                        {speakerState.speaking && speakerState.activeMessageId === `msg-${index}` ? (
+                          <>
+                            <span className="animate-pulse">⏹️ Stop reading</span>
+                            <span className="font-mono text-[10px] text-amber-900">[ılı.lıllı]</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>🔊 Listen</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </>
                 ) : (
                   <p className="whitespace-pre-wrap leading-relaxed">{message.content}</p>
                 )}

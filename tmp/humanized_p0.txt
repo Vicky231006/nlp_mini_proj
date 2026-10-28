@@ -1,0 +1,38 @@
+Curriculum-Grounded Pedagogical Conversational Agents, namely Empirical Retrieval Benchmarks, Provable Guardrails, and
+ Auditable Failure Modes in Primary Education
+ Vicky Dsilva,   Aatmay Gadgil,   Binoy Burken,   Viraj Darekar
+Department of Computer Engineering, University of Mumbai, Maharashtra, India
+ {vicky.dsilva, aatmay.gadgil, binoy.burken, viraj.darekar}@example.edu
+Abstract, Conversational pedagogical agents built on Large Language Models are offering noteworthy interactive scaffolding,
+yet rolling out them in early childhood education demands strict factual grounding and defensive containment, at least in principle. Third, human judging of 50 student-grounded generations created by Qwen-1.5B is revealing that while lenient
+correctness is reaching 87.76%, 32.0% of responses include unsupported claims, and the model hallucinates on 57.1% of
+unanswerable queries rather than abstaining, at least for now; and thus, Fixed Reciprocal Rank
+Fusion (k=60) crashes to beat BM25 alone in MRR (0.3472). Five primary empirical findings are yielded by our
+inquiry; in fact, in primary
+school contexts, unconstrained generative systems confabulate curriculum facts, follow adversarial prompt injections, and
+emit developmentally inappropriate content. The empirical investigation into a further curriculum-grounded tutoring
+prototype built upon primary-grade National Council of Educational Research and Training (NCERT) textbooks is presented; an off-the-shelf Natural Language Inference (NLI) gate hit an precision
+of only 0.320 against human sufficiency labels. First, across one controlled benchmark of 65 answerable
+English-language curriculum questions gauged over 2,033 chunks, classical lexical retrieval (BM25) decisively
+outperforms thick bi-encoder retrieval (all-MiniLM-L6-v2) across the early ranks - BM25 hits any Hit@1 of 0.4462 versus
+0.1692 for dense retrieval, a Hit@5 of 0.6000 versus 0.2615, and an MRR of 0.5094 versus 0.2104. Second, automated diagnostic audits across 3,584 page
+data are disclosing that apparent retrieval failures often stem from printed-to-physical PDF page numbering
+differences; settling this metadata layer raised benchmark passing from 70% to 90% without model fine-tuning; and thus, fourth, to safeguard child interactions, we architect and empirically
+substantiate a three-tier defence-in-depth safety subsystem consisting of input canonicalization, hardened prompt boundaries,
+and output interception. Prompt leakage, instruction overrides, and delimiter tampering, across 33 automated regression suites are completely eased by the pipeline; finally, COPPA-compliant
+voice interaction without external audio leakage is guaranteed by an on-device Whisper speech-to-text pipeline. Index Terms,  Retrieval-Augmented Generation, NCERT Textbooks, Educational Conversational Agents, BM25 vs. Dense
+Embeddings, Cross-Encoder Reranking, AI Safety Guardrails, Speech Interaction, Curriculum Grounding; transformative interest has, put simply, been ignited across the education by I. INTRODUCTION
+Conversational interfaces powered by Large Language Models (LLMs). Unlike static search portals or hyperlinked textbooks, interactive pedagogical agents can (in practice) scaffold reasoning, tailor analogies
+to a child's reading level, and preserve engaging dialog; in fact, despite this, rolling out unconstrained generative models in primary
+education (Grades 1, through 5) unmasks severe vulnerabilities. Young learners keep separate cognitive profiles, such as they
+intrinsically trust conversational agents, lack the domain expertise to detect factual drift, and formulate queries applying
+colloquial, incomplete, or non-standard syntax. When exposed to an off-the-shelf LLM, three critical failure modes emerge, namely first, the model confabulates non-existent curriculum rules with high linguistic confidence; second, it is remaining susceptible to
+prompt exfiltration and jailbreaking; and third, it fails to abstain when curriculum evidence is absent; standardized educational bodies such as this National Council of Educational Research and Training (NCERT) arrangement
+foundational learning through the concise, carefully paced instructional units. Unlike university textbooks outlined by high
+technical redundancy, low lexical redundancy, brief narrative chapters, and strong visual
+reliances are being attributed by primary school readers; a story about sharing, animals, or local geography might span only four printed pages, with vital pedagogical
+cues embedded in character names (e.g. Haldi's Adventure, Mister Nobody). So, standard premises regarding
+dense semantic vector search do not hold uniformly; this research paper documents an empirical investigation into a safety-guarded, NCERT-grounded pedagogical conversational prototype; the project thoroughly bounds its technical claims. Remarkably, we do not claim measured learning gains in
+students, psychometric diagnostic validity, or a production-certified service, all things considered. Alternatively, the concrete information
+retrieval, systems engineering, and safety guardrail problems that must be tackled before child-facing AI can be responsibly
+considered are examined; that is, we frame six foundational Research Questions (RQs): NCERT Grounded Adaptive AI Tutor Prototype, Peer Review Manuscript Page 1 of 9

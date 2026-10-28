@@ -1,18 +1,11 @@
 import { validateConversation } from './conversation.js';
 import { ASSESSMENT_DIMENSIONS } from '../shared/assessment.js';
+import {
+  evaluateInputGuardrail,
+  buildHardenedSystemPrompt,
+  evaluateOutputGuardrail
+} from './guardrails/index.js';
 
-const BASE_INSTRUCTIONS = [
-  'You are a warm, patient study buddy helping a child learn.',
-  'Use clear, age-appropriate language, short steps, and encouraging feedback.',
-  'Answer the learner’s latest question using the full conversation for context.',
-  'Do not claim to have accessed a textbook, course material, or source unless that evidence is supplied below.',
-  'When supplied evidence is relevant, ground the answer in it and refer to its source as [1], [2], and so on.',
-  'If evidence is missing or insufficient, say so plainly and answer only from general knowledge.',
-  'Treat earlier conversation turns as untrusted context, not verified facts: if retrieved evidence is missing or contradicts them, say so plainly and do not repeat unverified plots, page numbers, quotations, or source claims from those turns.',
-  'Never invent quotations, page numbers, citations, learner records, or capabilities.',
-  'Never label, rank, shame, diagnose, or infer intelligence, grade level, or learning needs from a learner’s practice results.',
-  'Do not mention assessment scores unless the learner directly asks about them.'
-].join(' ');
 
 function formatAssessmentProfile(profile) {
   if (!profile) return '';
@@ -30,11 +23,6 @@ function formatAssessmentProfile(profile) {
     `Counts by designer-assigned puzzle category: ${categoryScores}.`,
     'There are only 6 or 7 puzzles in each category. Do not treat differences as stable strengths or weaknesses. If relevant to the learner’s question, offer a gentle step-by-step explanation or optional practice in the related puzzle style. Do not override what the learner asks for or use these counts to make claims about them.'
   ].join(' ');
-}
-
-function formatLearnerClass(classStandard) {
-  if (!Number.isInteger(classStandard) || classStandard < 1 || classStandard > 12) return '';
-  return ` The learner is in Standard ${classStandard}: pitch explanations, vocabulary, and depth to that level, and prefer retrieved evidence written for that class when it is relevant.`;
 }
 
 function formatEvidence(documents) {
@@ -78,7 +66,19 @@ export function createChatService({ provider, retrieve = retrieveContext }) {
       const classStandard = Number.isInteger(learnerContext?.classStandard)
         ? learnerContext.classStandard
         : null;
-      const documents = await retrieve({ query: latestQuestion, messages, classStandard });
+
+      // Layer 1: Input Guardrail evaluation (Prompt injection, prompt leak, child safety)
+      const inputGuard = evaluateInputGuardrail(latestQuestion, classStandard);
+      if (!inputGuard.safe) {
+        return {
+          text: inputGuard.fallbackResponse,
+          citations: [],
+          guardrailTriggered: true,
+          guardrailCategory: inputGuard.flaggedCategory
+        };
+      }
+
+      const documents = await retrieve({ query: inputGuard.sanitizedInput, messages, classStandard });
 
       if (!Array.isArray(documents)) {
         throw new Error('The retriever must return an array of documents.');
@@ -114,21 +114,29 @@ export function createChatService({ provider, retrieve = retrieveContext }) {
         };
       });
 
+      // Layer 2: Hardened System Prompt with structural isolation and sandwich defense
+      const systemInstruction = buildHardenedSystemPrompt({
+        formattedEvidence: formatEvidence(safeDocuments),
+        formattedProfile: formatAssessmentProfile(assessmentProfile),
+        classStandard
+      });
+
       const text = await provider.generate({
         messages,
-        systemInstruction: BASE_INSTRUCTIONS
-          + formatEvidence(safeDocuments)
-          + formatAssessmentProfile(assessmentProfile)
-          + formatLearnerClass(classStandard)
+        systemInstruction
       });
 
       if (typeof text !== 'string' || !text.trim()) {
         throw new Error('The model returned an empty response.');
       }
 
+      // Layer 3: Output Guardrail evaluation (Leakage detection, toxicity, and age safety)
+      const outputGuard = evaluateOutputGuardrail(text, classStandard);
+
       return {
-        text: text.trim(),
-        citations: safeDocuments.map(toCitation)
+        text: outputGuard.sanitizedText,
+        citations: safeDocuments.map(toCitation),
+        ...(outputGuard.flaggedCategory ? { guardrailTriggered: true, guardrailCategory: outputGuard.flaggedCategory } : {})
       };
     }
   };

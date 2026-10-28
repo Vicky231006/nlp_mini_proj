@@ -1,0 +1,26 @@
+ RQ1 (Retrieval Superiority): How do classical sparse lexical retrieval (BM25), thick bi-encoder embeddings
+(MiniLM), and fixed Reciprocal Rank Fusion (RRF) are comparing over a controlled primary-grade NCERT benchmark? To explain,  RQ2 (Query Complexity & Horizons): What performance boundaries emerge when queries need combining facts, across the multiple disparate textbook pages versus direct single-page lookups?  RQ3 (Metadata & Provenance Confounders): How do differences between printed textbook numbering and
+physical PDF page indices warp empirical retrieval evaluations?  RQ4 (Evidence Grounding & Abstention): To what extent does a compact generative model (Qwen-1.5B) adhere to retrieved textbook passages, in actual application; and thus, also, can, in effect, answerability is reliably gated by off-the-shelf NLI models?  RQ5 (Adversarial Defense-in-Depth): How successfully can seemingly a three-tier guardrail plane (input canonicalization, prompt
+hardening, and output interception) alleviate prompt extraction, instruction injection, and unsafe conversation?  RQ6 (Privacy-Preserving Audio): How can mostly an on-device speech-to-text pipeline remove external cloud voice
+transmission, under COPPA/FERPA compliance constraints? II. RELATED WORK AND COMPARATIVE LITERATURE
+Retrieval-Augmented Generation (RAG) unites information retrieval systems with sequence-to-sequence language models to
+ground generation in authoritative documents [1]. While, RAG architectures have showed strong capabilities, across the open-domain benchmarks (such as Natural Questions and TriviaQA), educational applications introduce strict fidelity
+thresholds [15]. The NCERT-RAG-Eval benchmark (Sharma et al. 2024 [6]) examined retrieval, across the secondary school science and mathematics textbooks (Classes 9 through 12) in recent literature, on the whole. Their work gathered that thick bi-encoders
+broadly topped keyword search when handling sophisticated scientific definitions and multi-step theorem proving, in the main. Across
+many paragraphs with major semantic setting, yet,
+secondary curricula are holding high conceptual redundancy, such as terms such as 'photosynthesis' or 'electronegativity' appear, in many respects. By comparison, early-grade primary textbooks present narrative brevity
+where quirky vocabulary dominates. Our empirical check uncovers that thick embeddings suffer from semantic
+dispersion in primary texts, reversing findings from secondary education literature, in real-world scenarios. Sparse retrieval models grounded in the probabilistic relevance framework, specifically BM25Okapi [2], score term overlap
+punished by document length, broadly speaking. Siamese transformer networks (Sentence-BERT [3], DPR
+[10] are implemented by dense retrieval methods) mapped into the metric vector spaces applying FAISS [5], to a significant degree. Hybrid aggregation architectures commonly depend on Reciprocal Rank
+Fusion (RRF) [4] to combine different score distributions without costly re-calibration, at least empirically. Cross-encoders [11] perform full
+cross-attention over concatenated query-document tokens, yielding superior ranking accuracy at increased inference latency. In AI safety, the OWASP Top 10 for LLMs [8] and the NIST AI Risk Management Framework [9] identify indirect prompt
+injection and pervasive confabulation as primary threats, at least in practice. While, commercial API guardrails exist, they introduce
+unmanageable round-trip latency and vendor lock-in. We build upon deterministic pre-retrieval regex canonicalization and
+structural prompt boundaries [20]. III. SYSTEM ARCHITECTURE
+The complete system architecture is showed in Figure 1. The architecture is separating offline data ingestion and indexing
+from the online real-time tutoring pipeline, enforcing strict physical boundaries between untrusted student input, curriculum
+proof, and the core generative language model, in actual application. IEEE TRANSACTIONS ON LEARNING TECHNOLOGIES
+DSILVA et al.: CURRICULUM-GROUNDED PEDAGOGICAL AGENTS
+NCERT Grounded Adaptive AI Tutor Prototype, Peer Review Manuscript
+Page 2 of 9

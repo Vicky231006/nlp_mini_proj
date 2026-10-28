@@ -1,0 +1,164 @@
+{
+  "timestamp": "2026-10-28T14:07:07.018Z",
+  "total": 10,
+  "passed": 9,
+  "results": [
+    {
+      "test": "Grade 1 English Chapter 1 (Phonetic spelling test)",
+      "grade": 1,
+      "subject": "English",
+      "query": "teach me 1st chapter in inglis",
+      "expectedBook": "Mridang",
+      "latencyMs": 2323,
+      "citationCount": 4,
+      "citations": [
+        "Class_01 | English | Mridang | pages 11,12,13,14,15,16",
+        "Class_01 | English | Mridang | pages 16,17",
+        "Class_01 | English | Mridang | pages 31,32,33,34,35",
+        "Class_01 | English | Mridang | pages 29,30,31,32"
+      ],
+      "passed": true,
+      "preview": "Hello! I am so happy to help you with your English class! 🌟\n\nThe first chapter in your **Mridang** textbook is called **\"Two Little Hands\"**. It is a"
+    },
+    {
+      "test": "Grade 1 Mathematics Shapes & Space",
+      "grade": 1,
+      "subject": "Mathematics",
+      "query": "explain shapes in maths",
+      "expectedBook": "Joyful-Mathematics",
+      "latencyMs": 18205,
+      "citationCount": 3,
+      "citations": [
+        "Class_01 | Mathematics | Joyful-Mathematics__English_ | pages 8",
+        "Class_01 | Mathematics | Joyful-Mathematics__English_ | pages 7,8",
+        "Class_01 | Mathematics | Joyful-Mathematics__English_ | pages 7"
+      ],
+      "passed": true,
+      "preview": "Hi there! 🌟 I am so happy you asked about shapes! They are one of the most fun parts of your **Joyful Mathematics** book.\n\nThink of shapes as the bui"
+    },
+    {
+      "test": "Grade 2 English Chapter 2 Seeing without Seeing",
+      "grade": 2,
+      "subject": "English",
+      "query": "teach me 2nd chapter inglis",
+      "expectedBook": "Mridang",
+      "latencyMs": 25122,
+      "citationCount": 3,
+      "citations": [
+        "Class_02 | English | Mridang | pages 40,41,42",
+        "Class_02 | English | Mridang | pages 31,32,33",
+        "Class_02 | English | Mridang | pages 14,15,16,17"
+      ],
+      "passed": true,
+      "preview": "Hello! I am so happy to help you with your English lesson! 📚✨\n\nWe are looking at **Chapter 2** of your *Mridang* book. The title of this chapter is *"
+    },
+    {
+      "test": "Grade 2 Mathematics Counting Diyas",
+      "grade": 2,
+      "subject": "Mathematics",
+      "query": "teach me counting diyas in maths",
+      "expectedBook": "Joyful-Mathematics",
+      "latencyMs": 18993,
+      "citationCount": 4,
+      "citations": [
+        "Class_02 | Mathematics | Joyful-Mathematics__English_ | pages 8",
+        "Class_02 | Mathematics | Joyful-Mathematics__English_ | pages 7",
+        "Class_02 | Mathematics | Joyful-Mathematics__English_ | pages 7,8",
+        "Class_02 | Mathematics | Joyful-Mathematics__English_ | pages 9"
+      ],
+      "passed": true,
+      "preview": "That sounds like a fun activity! 🪔 Counting diyas (little oil lamps) is a great way to practice your math skills.\n\nIn your **Joyful Mathematics** boo"
+    },
+    {
+      "test": "Grade 3 English Santoor Chapter 1",
+      "grade": 3,
+      "subject": "English",
+      "query": "teach me first chapter in english",
+      "expectedBook": "Santoor",
+      "latencyMs": 1676,
+      "citationCount": 5,
+      "citations": [
+        "Class_03 | English | Santoor | pages 40,41,42",
+        "Class_03 | English | Santoor | pages 69,70,71,72",
+        "Class_03 | English | Santoor | pages 43,44,45",
+        "Class_03 | English | Santoor | pages 42,43,44",
+        "Class_03 | English | Santoor | pages 67,68,69"
+      ],
+      "passed": true,
+      "preview": "Hi there! 🌟 I am so happy to help you with your English lessons.\n\nIn your **Santoor** textbook, the very first chapter in **Unit 1** is called **\"Col"
+    },
+    {
+      "test": "Grade 3 Mathematics Maths Mela",
+      "grade": 3,
+      "subject": "Mathematics",
+      "query": "help me with shapes and patterns in math",
+      "expectedBook": "Maths_Mela",
+      "latencyMs": 128270,
+      "citationCount": 5,
+      "citations": [
+        "Class_03 | Mathematics | Maths_Mela | pages 67,68,69",
+        "Class_03 | Mathematics | Maths_Mela | pages 25,26,27",
+        "Class_03 | Mathematics | Maths_Mela | pages 71,72,73",
+        "Class_03 | Mathematics | Maths_Mela | pages 69,70",
+        "Class_03 | Mathematics | Maths_Mela | pages 4,5"
+      ],
+      "passed": true,
+      "preview": "Hello there! 🌟 I am so happy to help you with shapes and patterns. It is like a fun puzzle game! Since you are in Standard 3, your *Maths Mela* book "
+    },
+    {
+      "test": "Grade 3 Science/EVS Our Wondrous World",
+      "grade": 3,
+      "subject": "The World Around Us (EVS)",
+      "query": "tell me about our family and home in evs",
+      "passed": false,
+      "error": "Local model request failed (HTTP 429). Check the configured endpoint and model name."
+    },
+    {
+      "test": "Grade 4 English Santoor Chapter 1",
+      "grade": 4,
+      "subject": "English",
+      "query": "teach me chapter 1 in english",
+      "expectedBook": "Santoor",
+      "latencyMs": 99793,
+      "citationCount": 1,
+      "citations": [
+        "Class_04 | English | Santoor | pages 17,18"
+      ],
+      "passed": true,
+      "preview": "Hi there! I'd be happy to help you with your English lessons! 📚✨\n\nHowever, I don't have the specific text for \"Chapter 1\" of your English textbook ri"
+    },
+    {
+      "test": "Grade 4 Mathematics Math-Mela",
+      "grade": 4,
+      "subject": "Mathematics",
+      "query": "teach me numbers and patterns in maths",
+      "expectedBook": "Math-Mela",
+      "latencyMs": 93684,
+      "citationCount": 2,
+      "citations": [
+        "Class_04 | Mathematics | Math-Mela | pages 4,5",
+        "Class_04 | Mathematics | Math-Mela | pages 5"
+      ],
+      "passed": true,
+      "preview": "Hi there! 🌟 I am so happy you want to learn about numbers and patterns. It is like solving a fun puzzle!\n\nIn your **Math-Mela** book, we learn that m"
+    },
+    {
+      "test": "Grade 4 Science/EVS Our Wonderous World",
+      "grade": 4,
+      "subject": "The World Around Us (EVS)",
+      "query": "explain plants and animals in science",
+      "expectedBook": "Our_Wonderous_World",
+      "latencyMs": 25501,
+      "citationCount": 5,
+      "citations": [
+        "Class_03 | The_World_Around_Us | Our_Wondrous_World | pages 93,94",
+        "Class_03 | The_World_Around_Us | Our_Wondrous_World | pages 61,62",
+        "Class_03 | The_World_Around_Us | Our_Wondrous_World | pages 81,82",
+        "Class_03 | The_World_Around_Us | Our_Wondrous_World | pages 79,80,81",
+        "Class_03 | The_World_Around_Us | Our_Wondrous_World | pages 15,16,17"
+      ],
+      "passed": true,
+      "preview": "Hi there! 🌿🐾 I am so happy you asked about this! It is one of the most exciting parts of science.\n\nIn science, **Plants** and **Animals** are both *"
+    }
+  ]
+}

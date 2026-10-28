@@ -1,0 +1,42 @@
+[13] P. He, X. Liu, J. Gao, and W. Chen, 'DeBERTa: Decoding-enhanced BERT with disentangled attention,' in International Conference on Learning
+ Representations (ICLR), 2021.
+[14] E. Perez et al. 'Red teaming language models with language models,' in Proceedings of EMNLP, pp. 3419-3448, 2022.
+ [15] E. Kasneci et al. 'ChatGPT for good? On opportunities and challenges of large language models for education,' Learning and Citizen
+ Differences, vol. 103, p. 102274, 2023.
+[16] K. Shuster, S. Poff, M. Chen, D. Kiela, and J. Weston, 'Retrieval augmentation decreases hallucination in conversation,' in Proceedings of EMNLP,
+ pp. 3784-3803, 2021.
+[17] N. Thakur, N. Reimers, A. Ruckle, A. Srivastava, and I. Gurevych, 'BEIR: A mixed benchmark for zero-shot evaluation of information
+ retrieval models,' in NeurIPS Datasets and Benchmarks Track, 2021.
+[18] Federal Trade Commission, 'Children's Online Privacy Protection Rule (COPPA),' 16 CFR Part 312, 1998.
+ [19] U.S. Department of Education, 'Family Educational Rights and Privacy Act (FERPA),' 34 CFR Part 99, 1974.
+ [20] K. Greshake, S. Abdelnabi, S. Mishra, C. Endres, T. Holz, and M. Fritz, 'Not what you've signed up for: Compromising real-world
+ LLM-integrated applications with indirect prompt injection,' in Proceedings of the 16th ACM Workshop on Artificial Intelligence and Security
+(AISEC), pp. 79-90, 2023.
+[21] H. Hassan, 'Turnitout-Humanizer: Zero-AI programmatic text transformation engine for academic integrity preservation,' GitHub Repository,
+ 2026. [Online]. Available: https://github.com/AhmadHassan-BTed/Turnitout-Humanizer
+[22] S. Bird, E. Klein, and E. Loper, Natural Language Processing with Python. O'Reilly Media, 2009.
+ 
+ACKNOWLEDGMENT
+The authors state sincere gratitude to the National Council of Educational Research and Training (NCERT) for offering
+open-access, high-quality primary educational materials. We also recognize the open-source NLP and IR research
+communities for devising and distributing reproducible tools including Sentence-Transformers, HuggingFace, FAISS,
+PyMuPDF, and Whisper.
+AUTHOR BIOGRAPHIES
+Vicky Dsilva received the Higher Secondary Certificate and is chasing the B.E. degree in Computer Engineering at the
+University of Mumbai, India. Department of Computer Engineering, University of Mumbai. His research emphasizes on natural
+language processing, retrieval-augmented generation architectures, and safety containment for educational conversational
+agents.
+Aatmay Gadgil received the Higher Secondary Certificate and is pursuing the B.E. degree in Computer Engineering at the
+University of Mumbai, India. Department of Computer Engineering, University of Mumbai. His research interests
+cover information retrieval, transformer-based cross-encoder reranking, and privacy-preserving multimodal speech
+interfaces.
+Binoy Burken received the Higher Secondary Certificate and is pursuing the B.E. degree in Computer Engineering at the
+University of Mumbai, India. Department of Computer Engineering, University of Mumbai. He specializes in distributed
+machine learning pipelines, system security guardrails, and empirical evaluation methodologies for educational technology.
+Viraj Darekar received the Higher Secondary Certificate and is pursuing the B.E. degree in Computer Engineering at the
+University of Mumbai, India. Department of Computer Engineering, University of Mumbai. His research centers on natural
+language inference, calibration of evidence sufficiency gates, and reliable child-computer interaction frameworks.
+IEEE TRANSACTIONS ON LEARNING TECHNOLOGIES
+DSILVA et al.: CURRICULUM-GROUNDED PEDAGOGICAL AGENTS
+NCERT Grounded Adaptive AI Tutor Prototype, Peer Review Manuscript
+Page 9 of 9

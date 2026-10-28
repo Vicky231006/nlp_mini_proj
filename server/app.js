@@ -15,6 +15,7 @@ import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { createAccountDatabase, createAccountStore } from './accountStore.js';
+import { transcribeAudioBuffer } from './speech/whisperTranscribe.js';
 
 const AUTH_COOKIE = 'puzzle_session';
 const AUTH_RATE_WINDOW_MS = 15 * 60 * 1000;
@@ -92,7 +93,7 @@ export function createApp({
   const authAttempts = new Map();
 
   app.disable('x-powered-by');
-  app.use(express.json({ limit: '512kb' }));
+  app.use(express.json({ limit: '16mb' }));
 
   const authenticate = (request, response, next) => {
     const session = accounts.authenticate(getCookie(request, AUTH_COOKIE));
@@ -362,6 +363,39 @@ export function createApp({
             ? publicMessage
             : 'The tutor could not complete this request. Check server configuration and try again.'
       });
+    }
+  });
+
+  app.post('/api/audio/transcribe', authenticate, async (request, response) => {
+    try {
+      const { audio, format } = request.body || {};
+      if (!audio || typeof audio !== 'string') {
+        response.status(400).json({ error: 'Audio data is required as a base64 string.' });
+        return;
+      }
+
+      const base64Data = audio.includes(',') ? audio.split(',')[1] : audio;
+      const buffer = Buffer.from(base64Data, 'base64');
+
+      if (buffer.length === 0) {
+        response.status(400).json({ error: 'Audio buffer is empty.' });
+        return;
+      }
+
+      if (buffer.length > 15 * 1024 * 1024) {
+        response.status(413).json({ error: 'Audio file exceeds 15MB limit.' });
+        return;
+      }
+
+      const extension = (typeof format === 'string' && /^[a-z0-9]+$/i.test(format))
+        ? format.toLowerCase()
+        : 'webm';
+
+      const result = await transcribeAudioBuffer(buffer, extension);
+      response.json(result);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      response.status(500).json({ error: 'Audio transcription failed.', details: message });
     }
   });
 

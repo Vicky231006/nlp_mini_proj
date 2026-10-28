@@ -21,7 +21,7 @@ function parseTimeoutMs(value) {
 
 function parseMinScore(value) {
   const parsed = Number.parseFloat(value ?? '');
-  if (!Number.isFinite(parsed)) return 0;
+  if (!Number.isFinite(parsed)) return -2;
   return Math.min(10, Math.max(-10, parsed));
 }
 
@@ -30,19 +30,90 @@ function parseMinScore(value) {
 // precise standalone queries are sent untouched.
 const NEEDS_CONTEXT_RE = /\b(that|this|these|those|it|its|they|them|he|him|his|she|her|hers|their|theirs|above|previous|earlier|same)\b/i;
 
-export function buildRetrievalQuery({ query, messages }) {
-  const base = typeof query === 'string' ? query.trim() : '';
-  if (!base || !NEEDS_CONTEXT_RE.test(base) || !Array.isArray(messages)) {
-    return base;
+export function buildRetrievalQuery({ query, messages, classStandard }) {
+  let base = typeof query === 'string' ? query.trim() : '';
+  if (!base) return '';
+
+  if (NEEDS_CONTEXT_RE.test(base) && Array.isArray(messages)) {
+    const userTurns = messages
+      .filter((message) => message?.role === 'user' && typeof message.content === 'string')
+      .map((message) => message.content.trim())
+      .filter(Boolean);
+    // Last turn is the base question itself; take the one before it.
+    const prior = userTurns.length > 1 ? userTurns[userTurns.length - 2] : '';
+    if (prior) {
+      base = `${prior.slice(-500)}\n${base}`.slice(0, 1000);
+    }
   }
-  const userTurns = messages
-    .filter((message) => message?.role === 'user' && typeof message.content === 'string')
-    .map((message) => message.content.trim())
-    .filter(Boolean);
-  // Last turn is the base question itself; take the one before it.
-  const prior = userTurns.length > 1 ? userTurns[userTurns.length - 2] : '';
-  if (!prior) return base;
-  return `${prior.slice(-500)}\n${base}`.slice(0, 1000);
+
+  // Normalize common phonetic child misspellings & ordinals
+  let normalized = base
+    .replace(/\b(inglis|engish|englsih|englsh)\b/gi, 'English')
+    .replace(/\b(maths?|mat|ganit)\b/gi, 'Mathematics')
+    .replace(/\b(evs|science|nature|environment)\b/gi, 'The World Around Us')
+    .replace(/\b(arts?|drawing|craft)\b/gi, 'Arts Bansuri')
+    .replace(/\b(yoga|khel|physical\s+ed|pe)\b/gi, 'Khel Yoga')
+    .replace(/\b(\d+)(?:st|nd|rd|th)\s+chapter\b/gi, 'Chapter $1')
+    .replace(/\bchapter\s+(\d+)(?:st|nd|rd|th)\b/gi, 'Chapter $1')
+    .replace(/\bfirst\s+chapter\b/gi, 'Chapter 1')
+    .replace(/\bsecond\s+chapter\b/gi, 'Chapter 2')
+    .replace(/\bthird\s+chapter\b/gi, 'Chapter 3')
+    .replace(/\bfourth\s+chapter\b/gi, 'Chapter 4')
+    .replace(/\bfifth\s+chapter\b/gi, 'Chapter 5');
+
+  const parsedClass = normalizeClass(classStandard);
+  if (parsedClass && !/\b(class|standard|grade)\s*\d+\b/i.test(normalized)) {
+    const isEnglish = /\benglish\b/i.test(normalized);
+    const isMath = /\bmathematics\b/i.test(normalized);
+    const isEvs = /\bthe world around us\b/i.test(normalized);
+    const isArts = /\b(arts|drawing|craft|bansuri)\b/i.test(normalized);
+    const isPE = /\b(khel|yoga|physical)\b/i.test(normalized);
+    let bookHint = '';
+    let chapterExtra = '';
+
+    const chapterMatch = normalized.match(/\bchapter\s+(\d+)\b/i);
+    const chNum = chapterMatch ? parseInt(chapterMatch[1], 10) : null;
+
+    if (parsedClass <= 2) {
+      if (isEnglish) {
+        bookHint = 'Mridang';
+        if (chNum === 1) chapterExtra = parsedClass === 1 ? 'Two Little Hands Unit 1' : 'My Bicycle Unit 1';
+        else if (chNum === 2) chapterExtra = parsedClass === 1 ? 'Greetings' : 'Seeing without Seeing It is Fun Unit 2';
+        else if (chNum === 3) chapterExtra = parsedClass === 1 ? 'Picture Time Life Around Us' : 'Going Places Come Back Soon';
+      } else if (isMath) {
+        bookHint = 'Joyful-Mathematics';
+        if (chNum === 1) chapterExtra = parsedClass === 1 ? 'Finding the Furry Cat' : 'A Day at the Beach';
+        else if (chNum === 2) chapterExtra = parsedClass === 1 ? 'What is Long What is Round Shapes' : 'Shapes Around Us';
+        else if (chNum === 3) chapterExtra = parsedClass === 1 ? 'Mango Treat Numbers' : 'Fun with Numbers';
+        else if (chNum === 4) chapterExtra = parsedClass === 1 ? 'Making 10' : 'Shadow Story Counting Diyas';
+      }
+    } else if (parsedClass <= 4) {
+      if (isEnglish) {
+        bookHint = 'Santoor';
+        if (chNum === 1) chapterExtra = parsedClass === 3 ? 'Colours Unit 1' : 'Together We Can Unit 1';
+        else if (chNum === 2) chapterExtra = parsedClass === 3 ? 'Badal and Moti' : 'The Tinkling Bells';
+        else if (chNum === 3) chapterExtra = parsedClass === 3 ? 'Best Friends' : 'Be Smart Be Safe';
+        else if (chNum === 4) chapterExtra = parsedClass === 3 ? 'Out in the Garden' : 'One Thing at a Time';
+      } else if (isMath) {
+        bookHint = parsedClass === 3 ? 'Maths_Mela' : 'Math-Mela';
+        if (chNum === 1) chapterExtra = parsedClass === 3 ? 'Whats in a Name' : 'Finding Symmetry';
+        else if (chNum === 2) chapterExtra = parsedClass === 3 ? 'Toy Joy' : 'Large World of Numbers';
+        else if (chNum === 3) chapterExtra = parsedClass === 3 ? 'Double Century' : 'Trip to Bhopal';
+      } else if (isEvs) {
+        bookHint = parsedClass === 3 ? 'Our_Wondrous_World' : 'Our_Wonderous_World';
+        if (chNum === 1) chapterExtra = parsedClass === 3 ? 'Family and Friends Unit 1' : 'Living Together Unit 1';
+        else if (chNum === 2) chapterExtra = parsedClass === 3 ? 'Going to the Mela' : 'Exploring Our Neighbourhood';
+        else if (chNum === 3) chapterExtra = parsedClass === 3 ? 'Celebrating Festivals' : 'Nature Trail';
+      } else if (isArts) {
+        bookHint = parsedClass === 3 ? 'Bansuri_-_I' : 'Bansuri';
+      } else if (isPE) {
+        bookHint = 'Khel_Yoga';
+      }
+    }
+    normalized = `Class ${parsedClass} ${bookHint} ${normalized} ${chapterExtra}`.replace(/\s+/g, ' ').trim();
+  }
+
+  return normalized;
 }
 
 export function getRetrievalSettings(env = process.env) {
@@ -75,11 +146,11 @@ export function createRetriever({
   fetchImpl = fetch
 } = {}) {
   return async function retrieveContext(input) {
-    const query = buildRetrievalQuery(input || {});
+    const classStandard = normalizeClass(input?.classStandard);
+    const query = buildRetrievalQuery({ ...(input || {}), classStandard });
     if (!enabled || query.length < 2) {
       return [];
     }
-    const classStandard = normalizeClass(input?.classStandard);
 
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), timeoutMs);
@@ -127,6 +198,27 @@ export function createRetriever({
           classStandard: normalizeClass(document.metadata?.class)
         });
       }
+
+      // If minScore dropped all documents, keep the best candidate matching
+      // the learner's class (or the highest scoring candidate) so the tutor
+      // is not starved of evidence.
+      if (documents.length === 0 && payload.documents.length > 0) {
+        const wellFormed = payload.documents.filter((d) =>
+          typeof d?.title === 'string' && typeof d?.content === 'string' && d.title.trim() && d.content.trim()
+        );
+        const matchingClass = classStandard !== null
+          ? wellFormed.filter((d) => normalizeClass(d.metadata?.class) === classStandard)
+          : [];
+        const fallbackDocs = matchingClass.length > 0 ? matchingClass : wellFormed;
+        for (const doc of fallbackDocs.slice(0, 3)) {
+          documents.push({
+            title: doc.title.trim(),
+            content: doc.content.trim(),
+            classStandard: normalizeClass(doc.metadata?.class)
+          });
+        }
+      }
+
       // When the learner's class is known, prefer sources written for it.
       // If nothing from that class survived, fall back to all relevant docs
       // rather than answering with no evidence at all.

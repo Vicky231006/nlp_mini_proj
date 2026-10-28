@@ -1,0 +1,92 @@
+C. Subsystem 3: Three-Tier Defense-in-Depth Safety Control Plane
+Child safety is enforced deterministically across the three decoupled layers: (1) Pre-Retrieval Input Guardrail: Canonicalizes
+text using NFKD Unicode normalization, strips invisible zero-width tracking characters, eliminates control characters, and
+executes regex pattern matching against prompt extraction, instruction override, jailbreaks, delimiter injections, and profanity
+lexicons. Any violation immediately aborts execution in under 2ms, returning an age-appropriate polite refusal without
+invoking the retriever or LLM; (2) Instruction Hardening: Untrusted evidence is sealed within the unambiguous XML
+boundaries (<evidence>...</evidence>) accompanied by strict system instructions forbidding prompt execution from
+evidence blocks; and (3) Post-Generation Output Guardrail: Screens generated tokens for system prompt fragments,
+delimiter echoes, and unsafe phrasing before transmission.
+D. Subsystem 4: Privacy-Preserving On-Device Speech Pipeline
+To support young learners with emerging typing skills, the application incorporates a local speech interface. Audio recorded
+via the browser's MediaRecorder API (WebM/Opus) is transmitted to POST /api/audio/transcribe. The Node.js server spawns
+an isolated Python worker executing OpenAI's open-source Whisper base model locally on CPU. Audio buffers are
+processed in memory and purged immediately, guaranteeing complete compliance with COPPA without external cloud
+telemetry.
+IV. CORPUS STRATIFICATION AND EVALUATION METHODOLOGY
+To guarantee auditability and eliminate dataset conflation, we establish three distinct corpus tiers as documented in Table I.
+ TABLE I. CORPUS STRATIFICATION AND DATASET DENOMINATORS
+ Corpus Tier
+ PDF Count
+ Total Pages
+ Pulled Chunks
+ Operational Scope
+Corpus V2 (Master)
+ 58
+ 4,098
+ 3,459
+Unfiltered master repository of NCERT primary
+PDFs
+Corpus V2 Clean
+ 22
+ 2,614
+ 3,023
+De-duplicated authoritative textbook baseline
+English-Only V1
+ 18
+ 1,842
+ 2,033
+Frozen benchmark evaluation corpus (Grades 1-5)
+The English-Only V1 benchmark contains 77 structured questions: 65 answerable questions accompanied by gold textbook
+page annotations, and 12 unanswerable distractor questions. Per the evaluation configuration manifest, unanswerable
+questions are analyzed descriptively and are not used to claim rejection accuracy. Retrieval relevance requires a strict dual
+condition: the retrieved passage must originate from the ground-truth textbook file and its page range must intersect the gold
+PDF page set.
+Mathematically, BM25 scoring for query q and document chunk d is expressed as:
+ Score_BM25(q, d) = SUM_{t in q} IDF(t) * [ TF(t, d) * (k1 + 1) ] / [ TF(t, d) + k1 * (1 - b + b * (|d| / avgdl)) ]
+where k1 = 1.5, b = 0.75, |d| is chunk word length, and avgdl is average chunk length across the corpus. For dense retrieval,
+unit-normalized embeddings v_q and v_d yield an inner product that is strictly cosine-equivalent:
+ Score_Dense(q, d) = < v_q, v_d > = cos( e(q), e(d) )
+Reciprocal Rank Fusion merges candidate lists across M = {BM25, Dense}:
+ RRF(d) = SUM_{m in M} 1 / [ k + r_m(d) ],    with k = 60
+V. EMPIRICAL RETRIEVAL BENCHMARKS AND FINDINGS
+Table II reports the primary empirical comparison across all 65 answerable questions of the frozen English-Only V1
+benchmark.
+ TABLE II. EMPIRICAL RETRIEVAL BENCHMARK RESULTS (65 ANSWERABLE QUESTIONS)
+ Retriever Strategy
+ Hit@1
+ Hit@3
+ Hit@5
+ Hit@10
+ Page
+Recall@10
+ MRR
+ nDCG@10
+BM25 (Sparse)
+ 0.4462
+ 0.5538
+ 0.6000
+ 0.6308
+ 0.6231
+ 0.5094
+ 0.5246
+Dense MiniLM (FAISS)
+ 0.1692
+ 0.2308
+ 0.2615
+ 0.3385
+ 0.3308
+ 0.2104
+ 0.2344
+Fixed Hybrid RRF (k=60)
+ 0.2308
+ 0.4154
+ 0.5077
+ 0.6308
+ 0.6077
+ 0.3472
+ 0.4096
+IEEE TRANSACTIONS ON LEARNING TECHNOLOGIES
+DSILVA et al.: CURRICULUM-GROUNDED PEDAGOGICAL AGENTS
+NCERT Grounded Adaptive AI Tutor Prototype, Peer Review Manuscript
+Page 4 of 9

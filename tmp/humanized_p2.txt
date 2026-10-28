@@ -1,0 +1,19 @@
+Fig. 1. Complete System Architecture of the NCERT-Grounded Conversational Tutor, and solid pathways represent fully implemented and
+empirically judged components (offline ingestion, BM25 indexing, FAISS packed indexing, cross-encoder reranking, the three-tier safety
+ guardrail control plane, local Whisper speech processing, and low-stakes cognitive practice), in many respects. Dashed lines mean the long-term planned
+ research roadmap (multimodal image indexing, psychometric state tracking, and autonomous teacher analytics), at least empirically. A. Subsystem 1, namely Offline Ingestion and Curriculum Dual-Key Indexing
+Authoritative NCERT textbook PDFs are ingested applying PyMuPDF (fitz); indeed, rather than counting on unspecified character
+chunking, the ingestion pipeline slices text streams into the fixed sliding windows of L = 200 words with a stride overlap of S =
+50 words. Crucially, to prevent benchmark contamination and provenance ambiguity, each person chunk is bound to a dual-key
+metadata descriptor, including M(c) = (chunk_id, source_file, class_num, subject, chapter, p_print, p_pdf), where p_print represents
+the page number imprinted in the textbook header/footer, and p_pdf represents the absolute zero-indexed physical page
+inside the PDF file. Against this backdrop, chunks are, to a large extent, indexed into an inverted BM25 index and a FAISS IndexFlatIP index populated with
+L2-normalized 384-dimensional embeddings yielded by all-MiniLM-L6-v2, and b. Subsystem 2, namely Online Multi-Stage Hybrid Retrieval & Reranking Service
+When an authenticated student query arrives, the local retrieval microservice (retrieval_service.py) is creating. At startup, the service rigorously claims, verifying chunk counts, metadata
+ordering, FAISS vector dimensions, and BM25 tokenized documents; in fact, for a query q, the top 50 lexical candidates and top 50
+thick candidates are retrieved. Candidates are fused via Reciprocal Rank Fusion (k=60); later, the top 50 fused
+candidates are scored by a neural cross-encoder (cross-encoder/ms-marco-MiniLM-L-6-v2). Only candidates meeting a
+optimized relevance threshold are returned to the orchestration layer; in fact, IEEE TRANSACTIONS ON LEARNING TECHNOLOGIES
+DSILVA et al.: CURRICULUM-GROUNDED PEDAGOGICAL AGENTS
+NCERT Grounded Adaptive AI Tutor Prototype, Peer Review Manuscript
+Page 3 of 9
