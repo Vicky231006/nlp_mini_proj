@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently -k -n web,api \"npm:dev:web\" \"npm:dev:api\"",
     "dev:web": "vite",
-    "dev:api": "node --watch server/index.js",
+    "dev:api": "node --watch --watch-path=server server/index.js",
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview",

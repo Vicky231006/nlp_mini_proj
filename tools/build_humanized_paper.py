@@ -52,12 +52,8 @@ DOCX_DOCS = DOCS / "Humanized_NCERT_Adaptive_Tutor_Comprehensive_IEEE_Report.doc
 
 TITLE = "Curriculum-Grounded Pedagogical Conversational Agents: Empirical Retrieval Benchmarks, Provable Guardrails, and Auditable Failure Modes in Primary Education"
 
-AUTHORS = [
-    ("Vicky Dsilva", "Department of Computer Engineering", "University of Mumbai", "Mumbai, India", "vicky.dsilva@example.edu"),
-    ("Aatmay Gadgil", "Department of Computer Engineering", "University of Mumbai", "Mumbai, India", "aatmay.gadgil@example.edu"),
-    ("Binoy Burken", "Department of Computer Engineering", "University of Mumbai", "Mumbai, India", "binoy.burken@example.edu"),
-    ("Viraj Darekar", "Department of Computer Engineering", "University of Mumbai", "Mumbai, India", "viraj.darekar@example.edu"),
-]
+AUTHORS_NAMES = "Vicky Dsilva, Aatmay Gadgil, Binoy Burken, Viraj Darekar"
+AUTHORS_AFFILIATION = "Department of Computer Engineering, FRCRCE, MU, Mumbai, India" 
 
 # ---------------------------------------------------------------------------
 # Numbered Canvas for Running Headers and Two-Pass Page Count
@@ -599,9 +595,8 @@ def build_pdf():
     # Title & Authors
     story.append(Paragraph(TITLE, title_style))
     author_str = (
-        "<b>Vicky Dsilva</b>, &nbsp; <b>Aatmay Gadgil</b>, &nbsp; <b>Binoy Burken</b>, &nbsp; <b>Viraj Darekar</b><br/>"
-        "<i>Department of Computer Engineering, University of Mumbai, Maharashtra, India</i><br/>"
-        "<code>{vicky.dsilva, aatmay.gadgil, binoy.burken, viraj.darekar}@example.edu</code>"
+        "<b>Vicky Dsilva, &nbsp; Aatmay Gadgil, &nbsp; Binoy Burken, &nbsp; Viraj Darekar</b><br/>"
+        "<i>Department of Computer Engineering, FRCRCE, MU, Mumbai, India</i>"
     )
     story.append(Paragraph(author_str, authors_style))
     story.append(HRFlowable(width="100%", thickness=0.6, color=colors.HexColor("#1A365D"), spaceAfter=6))
@@ -1043,8 +1038,7 @@ def build_docx():
     p_auth.paragraph_format.space_after = Pt(12)
     r_auth = p_auth.add_run(
         "Vicky Dsilva,  Aatmay Gadgil,  Binoy Burken,  Viraj Darekar\n"
-        "Department of Computer Engineering, University of Mumbai, Maharashtra, India\n"
-        "Email: {vicky.dsilva, aatmay.gadgil, binoy.burken, viraj.darekar}@example.edu"
+        "Department of Computer Engineering, FRCRCE, MU, Mumbai, India"
     )
     r_auth.font.name = 'Times New Roman'
     r_auth.font.size = Pt(10)

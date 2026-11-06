@@ -7,6 +7,16 @@ const app = createApp({ config });
 const server = createServer(app);
 
 const host = process.env.HOST || '127.0.0.1';
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`[api] Port ${config.port} is already in use by another process.`);
+  } else {
+    console.error('[api] Server error:', err);
+  }
+  process.exit(1);
+});
+
 server.listen(config.port, host, () => {
   console.log(`Chat API (${config.provider}) listening on ${host}:${config.port}`);
 });

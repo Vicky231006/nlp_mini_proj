@@ -33,13 +33,19 @@ data/
 *.sw?
 *.local
 .playwright-mcp
-.venv-retrieval
+.venv-retrieval/
 
-# Python bytecode
+# Python bytecode & caches
 __pycache__/
 *.pyc
 
+# Turnitin / Turnitout reports and methodology documents
+*turnitin*
+*turnitout*
+**/*turnitin*
+**/*turnitout*
 
+# PDFs and Office documents
 *.pdf
 **/*.pdf
 *.docx
@@ -48,3 +54,18 @@ __pycache__/
 **/*.doc
 *.tex
 **/*.tex
+
+# Images (PNG, JPG, JPEG, WebP)
+*.png
+**/*.png
+*.jpg
+**/*.jpg
+*.jpeg
+**/*.jpeg
+*.webp
+**/*.webp
+!public/favicon.svg
+
+# Temporary directories and runtime scratch files
+tmp/
+tmp/**

@@ -95,6 +95,21 @@ export function createApp({
   app.disable('x-powered-by');
   app.use(express.json({ limit: '16mb' }));
 
+  const corsOrigin = (process.env.CORS_ORIGIN || process.env.FRONTEND_URL || '').trim();
+  if (corsOrigin) {
+    app.use((request, response, next) => {
+      response.setHeader('Access-Control-Allow-Origin', corsOrigin);
+      response.setHeader('Access-Control-Allow-Credentials', 'true');
+      response.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-CSRF-Token');
+      response.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
+      if (request.method === 'OPTIONS') {
+        response.sendStatus(204);
+        return;
+      }
+      next();
+    });
+  }
+
   const authenticate = (request, response, next) => {
     const session = accounts.authenticate(getCookie(request, AUTH_COOKIE));
     if (!session) {

@@ -92,10 +92,15 @@ export function evaluateOutputGuardrail(rawText, classStandard = null) {
     }
   }
 
+  // Remove any remaining canned robotic disclaimers
+  const polishedText = trimmedText
+    .replace(/(?:Since )?I (?:can['’]t|cannot) physically (?:walk|open|access|reach|go|fetch)[^.]*\.\s*/gi, '')
+    .trim();
+
   // Output is safe and clean
   return {
     safe: true,
-    sanitizedText: trimmedText,
+    sanitizedText: polishedText || trimmedText,
     flaggedCategory: null,
     reason: null
   };

@@ -1,14 +1,23 @@
 let csrfToken = null;
 
+const API_BASE_URL = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL
+  ? String(import.meta.env.VITE_API_BASE_URL).replace(/\/+$/, '')
+  : '');
+
+function buildUrl(path) {
+  if (!API_BASE_URL) return path;
+  return `${API_BASE_URL}${path.startsWith('/') ? path : `/${path}`}`;
+}
+
 async function request(path, { method = 'GET', body } = {}) {
   const headers = {};
   if (body !== undefined) headers['Content-Type'] = 'application/json';
   if (method !== 'GET' && csrfToken) headers['X-CSRF-Token'] = csrfToken;
 
-  const response = await fetch(path, {
+  const response = await fetch(buildUrl(path), {
     method,
     headers,
-    credentials: 'same-origin',
+    credentials: API_BASE_URL ? 'include' : 'same-origin',
     ...(body !== undefined ? { body: JSON.stringify(body) } : {})
   });
   const payload = response.status === 204
@@ -101,7 +110,9 @@ export function sendStudentQuery(conversationId, messages) {
 }
 
 export async function getChatHealth() {
-  const response = await fetch('/api/health');
+  const response = await fetch(buildUrl('/api/health'), {
+    credentials: API_BASE_URL ? 'include' : 'same-origin'
+  });
   if (!response.ok) throw new Error(`Chat service returned HTTP ${response.status}.`);
   return response.json();
 }

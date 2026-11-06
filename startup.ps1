@@ -7,6 +7,30 @@
 #   4. Vite Frontend Application (port 5173)
 # ==============================================================================
 
+[CmdletBinding()]
+param(
+    [switch]$Background,
+    [switch]$Daemon,
+    [switch]$NoBrowser,
+    [switch]$Help
+)
+
+if ($Help) {
+    Write-Host @"
+Usage: .\startup.ps1 [-Background] [-Daemon] [-NoBrowser] [-Help]
+
+Parameters:
+  -Background, -Daemon   Launch all services detached in the background and return immediately.
+  -NoBrowser             Do not automatically open the browser UI.
+  -Help                  Show this usage help message.
+"@
+    exit 0
+}
+
+if ($Daemon) {
+    $Background = $true
+}
+
 $ErrorActionPreference = 'Stop'
 Set-Location -LiteralPath $PSScriptRoot
 
@@ -24,40 +48,76 @@ if (-not (Test-Path -LiteralPath $tmpDir)) {
 function Test-And-Free-Port {
     param(
         [int]$Port,
-        [string]$ServiceName
+        [string]$ServiceName = "Service"
     )
-    $connections = Get-NetTCPConnection -LocalPort $Port -ErrorAction SilentlyContinue
+    if (-not $Port -or $Port -le 0) { return }
+
+    $connections = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue
     if ($connections) {
         $pids = $connections | Select-Object -ExpandProperty OwningProcess -Unique
         foreach ($procId in $pids) {
             if ($procId -and $procId -ne 0 -and $procId -ne $PID) {
                 try {
                     $p = Get-Process -Id $procId -ErrorAction SilentlyContinue
-                    if ($p -and $p.ProcessName -in @('python', 'node', 'uvicorn')) {
-                        Write-Host "[!] Port $Port is held by stale $($p.ProcessName) (PID: $procId). Terminating..." -ForegroundColor Yellow
+                    if ($p -and $p.ProcessName -in @('python', 'python3', 'node', 'uvicorn', 'electron')) {
+                        Write-Host "  [!] Port $Port is held by stale $($p.ProcessName) (PID: $procId). Releasing..." -ForegroundColor Yellow
                         Stop-Process -Id $procId -Force -ErrorAction SilentlyContinue
-                        Start-Sleep -Milliseconds 500
                     }
                 } catch {}
             }
+        }
+        # Wait up to 3 seconds for port socket to be fully released by OS
+        for ($i = 0; $i -lt 6; $i++) {
+            Start-Sleep -Milliseconds 500
+            $active = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue
+            if (-not $active) { break }
         }
     }
 }
 
 # 1. Check prerequisites
-if (-not (Get-Command node -ErrorAction SilentlyContinue) -or
-    -not (Get-Command npm -ErrorAction SilentlyContinue)) {
+$nodeCmdObj = Get-Command node -ErrorAction SilentlyContinue
+$nodeCmd = if ($nodeCmdObj) { $nodeCmdObj.Source } else { $null }
+
+$npmCmdObj = Get-Command npm.cmd -ErrorAction SilentlyContinue
+if (-not $npmCmdObj) {
+    $npmCmdObj = Get-Command npm -ErrorAction SilentlyContinue
+}
+$npmCmd = if ($npmCmdObj) { $npmCmdObj.Source } else { $null }
+
+if (-not $nodeCmd -or -not $npmCmd) {
     throw 'Node.js 22+ and npm are required. Install them, then run this script again.'
 }
 
 # 2. Extract application configuration
-$configJson = node --input-type=module -e "import { getServerConfig } from './server/config.js'; const config = getServerConfig(); const modelUrl = new URL(config.openAICompatible.baseUrl); const retrievalUrl = new URL(config.retrieval.baseUrl); console.log(JSON.stringify({ provider: config.provider, origin: modelUrl.origin, hostname: modelUrl.hostname, port: modelUrl.port, model: config.openAICompatible.model, retrieval: { enabled: config.retrieval.enabled, origin: retrievalUrl.origin, hostname: retrievalUrl.hostname, port: (retrievalUrl.port || '8000') } }));"
-if ($LASTEXITCODE -ne 0) {
+$configJson = & $nodeCmd --input-type=module -e "
+import { getServerConfig } from './server/config.js';
+const config = getServerConfig();
+const modelUrl = new URL(config.openAICompatible.baseUrl);
+const retrievalUrl = new URL(config.retrieval.baseUrl);
+console.log(JSON.stringify({
+  provider: config.provider,
+  origin: modelUrl.origin,
+  hostname: modelUrl.hostname,
+  port: (modelUrl.port || (modelUrl.protocol === 'https:' ? '443' : '80')),
+  model: config.openAICompatible.model,
+  geminiModel: config.gemini?.model || '',
+  geminiKeyCount: config.gemini?.apiKeys?.length || 0,
+  retrieval: {
+    enabled: config.retrieval.enabled,
+    origin: retrievalUrl.origin,
+    hostname: retrievalUrl.hostname,
+    port: (retrievalUrl.port || (retrievalUrl.protocol === 'https:' ? '443' : '8000'))
+  }
+}));"
+
+if ($LASTEXITCODE -ne 0 -or -not $configJson) {
     throw 'Could not load the app configuration from server/config.js.'
 }
 $modelConfig = $configJson | ConvertFrom-Json
 $ollamaProcess = $null
 $retrievalProcess = $null
+$webProcess = $null
 
 try {
     # --------------------------------------------------------------------------
@@ -113,7 +173,11 @@ try {
             }
         }
     } else {
-        Write-Host "  -> Provider '$($modelConfig.provider)' configured (remote/Gemini)." -ForegroundColor Green
+        if ($modelConfig.provider -eq 'gemini') {
+            Write-Host "  -> Provider 'gemini' configured (model: $($modelConfig.geminiModel), active keys: $($modelConfig.geminiKeyCount))." -ForegroundColor Green
+        } else {
+            Write-Host "  -> Provider '$($modelConfig.provider)' configured ($($modelConfig.origin) / $($modelConfig.model))." -ForegroundColor Green
+        }
     }
 
     # --------------------------------------------------------------------------
@@ -137,10 +201,9 @@ try {
         } catch {}
 
         if (-not $retrievalReady) {
-            # Release port 8000 if held by a dead process
             Test-And-Free-Port -Port ([int]$retrieval.port) -ServiceName "Retrieval Service"
 
-            $venvPython = Join-Path $PSScriptRoot '.venv-retrieval/Scripts/python.exe'
+            $venvPython = Join-Path $PSScriptRoot '.venv-retrieval\Scripts\python.exe'
             if (-not (Test-Path -LiteralPath $venvPython)) {
                 Write-Warning "NCERT retrieval is enabled, but virtual environment '$venvPython' was not found.`nChat will run without retrieved textbook evidence."
             } else {
@@ -148,30 +211,42 @@ try {
                 $retrievalLog = Join-Path $tmpDir 'retrieval_service.log'
                 $retrievalErr = Join-Path $tmpDir 'retrieval_service.err'
 
-                # Clear old logs
-                if (Test-Path $retrievalLog) { Remove-Item $retrievalLog -Force }
-                if (Test-Path $retrievalErr) { Remove-Item $retrievalErr -Force }
+                # Safely clear or create log files without throwing file lock errors
+                try {
+                    if (Test-Path -LiteralPath $retrievalLog) { Clear-Content -LiteralPath $retrievalLog -ErrorAction SilentlyContinue }
+                    else { New-Item -ItemType File -Path $retrievalLog -Force -ErrorAction SilentlyContinue | Out-Null }
+                    if (Test-Path -LiteralPath $retrievalErr) { Clear-Content -LiteralPath $retrievalErr -ErrorAction SilentlyContinue }
+                    else { New-Item -ItemType File -Path $retrievalErr -Force -ErrorAction SilentlyContinue | Out-Null }
+                } catch {}
 
+                $env:PYTHONUNBUFFERED = "1"
                 $retrievalProcess = Start-Process -FilePath $venvPython `
-                    -ArgumentList @('-m', 'uvicorn', 'retrieval_service:app', '--host', $retrieval.hostname, '--port', $retrieval.port, '--log-level', 'info') `
+                    -ArgumentList "-u -m uvicorn retrieval_service:app --host $($retrieval.hostname) --port $($retrieval.port) --log-level info" `
                     -WorkingDirectory $PSScriptRoot `
                     -RedirectStandardOutput $retrievalLog `
                     -RedirectStandardError $retrievalErr `
+                    -WindowStyle Hidden `
                     -PassThru
 
                 Write-Host "  -> Loading FAISS dense index, BM25 indices, and neural models..." -NoNewline
 
-                for ($attempt = 1; $attempt -le 60; $attempt++) {
+                for ($attempt = 1; $attempt -le 120; $attempt++) {
                     Start-Sleep -Seconds 1
                     Write-Host -NoNewline "."
 
                     if ($retrievalProcess.HasExited) {
                         Write-Host " FAILED!" -ForegroundColor Red
-                        Write-Host "`n[!] Retrieval process exited with code $($retrievalProcess.ExitCode)." -ForegroundColor Red
-                        if (Test-Path $retrievalErr) {
+                        Write-Host "`n[!] Retrieval process exited prematurely with code $($retrievalProcess.ExitCode)." -ForegroundColor Red
+                        if (Test-Path -LiteralPath $retrievalErr) {
                             $errContent = Get-Content -LiteralPath $retrievalErr -Tail 20 -ErrorAction SilentlyContinue
                             if ($errContent) {
                                 Write-Host "Error Details:`n$($errContent -join "`n")" -ForegroundColor Red
+                            }
+                        }
+                        if (Test-Path -LiteralPath $retrievalLog) {
+                            $logContent = Get-Content -LiteralPath $retrievalLog -Tail 20 -ErrorAction SilentlyContinue
+                            if ($logContent) {
+                                Write-Host "Log Output:`n$($logContent -join "`n")" -ForegroundColor DarkGray
                             }
                         }
                         $retrievalProcess = $null
@@ -191,7 +266,7 @@ try {
 
                 if (-not $retrievalReady -and $retrievalProcess) {
                     Write-Host ""
-                    Write-Warning "NCERT retrieval did not become ready within 60s. Continuing startup..."
+                    Write-Warning "NCERT retrieval did not become ready within 120s. Continuing startup..."
                 }
             }
         }
@@ -211,25 +286,61 @@ try {
     Write-Host "  - UI Frontend:       http://localhost:5173" -ForegroundColor Cyan
     Write-Host "  - Express API:       http://localhost:3001" -ForegroundColor Cyan
     Write-Host "  - NCERT Retriever:   $($retrieval.origin)" -ForegroundColor Cyan
-    Write-Host "  - LLM Provider:      $($modelConfig.origin) ($($modelConfig.model))" -ForegroundColor Cyan
+    if ($modelConfig.provider -eq 'gemini') {
+        Write-Host "  - LLM Provider:      Gemini API ($($modelConfig.geminiModel))" -ForegroundColor Cyan
+    } else {
+        Write-Host "  - LLM Provider:      $($modelConfig.origin) ($($modelConfig.model))" -ForegroundColor Cyan
+    }
     Write-Host "==============================================================" -ForegroundColor Green
-    Write-Host "Press Ctrl+C to stop all services.`n" -ForegroundColor DarkGray
 
-    & npm run dev
+    if (-not $NoBrowser) {
+        # Launch browser once Vite is confirmed listening on port 5173
+        $openScript = "for (`$i = 0; `$i -lt 30; `$i++) { Start-Sleep -Milliseconds 500; if (Get-NetTCPConnection -LocalPort 5173 -State Listen -ErrorAction SilentlyContinue) { Start-Process 'http://localhost:5173'; break } }"
+        Start-Process powershell -ArgumentList "-NoProfile -Command $openScript" -WindowStyle Hidden
+    }
+
+    if ($Background) {
+        Write-Host "Running services in background (daemon mode)..." -ForegroundColor Yellow
+        $webProcess = Start-Process -FilePath $npmCmd `
+            -ArgumentList "run dev" `
+            -WorkingDirectory $PSScriptRoot `
+            -WindowStyle Minimized `
+            -PassThru
+
+        # Wait up to 10 seconds for API and UI ports to become active
+        for ($i = 1; $i -le 20; $i++) {
+            Start-Sleep -Milliseconds 500
+            $apiActive = Get-NetTCPConnection -LocalPort 3001 -State Listen -ErrorAction SilentlyContinue
+            $webActive = Get-NetTCPConnection -LocalPort 5173 -State Listen -ErrorAction SilentlyContinue
+            if ($apiActive -and $webActive) {
+                Write-Host "Both Express API (3001) and Vite Web UI (5173) are listening." -ForegroundColor Green
+                break
+            }
+        }
+
+        Write-Host "Services are running stably in the background." -ForegroundColor Green
+        Write-Host "Access the application at: http://localhost:5173`n" -ForegroundColor Cyan
+        return
+    }
+
+    Write-Host "Press Ctrl+C to stop all services.`n" -ForegroundColor DarkGray
+    & $npmCmd run dev
     if ($LASTEXITCODE -ne 0) {
-        throw "The web application exited with status $LASTEXITCODE."
+        Write-Warning "The web application exited with status $LASTEXITCODE."
     }
 } finally {
-    Write-Host "`nShutting down background services..." -ForegroundColor Yellow
-    if ($retrievalProcess -and -not $retrievalProcess.HasExited) {
-        Write-Host "Stopping NCERT retrieval service (PID: $($retrievalProcess.Id))..." -ForegroundColor DarkGray
-        Stop-Process -Id $retrievalProcess.Id -Force -ErrorAction SilentlyContinue
-        Wait-Process -Id $retrievalProcess.Id -Timeout 3 -ErrorAction SilentlyContinue
+    if (-not $Background) {
+        Write-Host "`nShutting down background services..." -ForegroundColor Yellow
+        if ($retrievalProcess -and -not $retrievalProcess.HasExited) {
+            Write-Host "Stopping NCERT retrieval service (PID: $($retrievalProcess.Id))..." -ForegroundColor DarkGray
+            Stop-Process -Id $retrievalProcess.Id -Force -ErrorAction SilentlyContinue
+            Wait-Process -Id $retrievalProcess.Id -Timeout 3 -ErrorAction SilentlyContinue
+        }
+        if ($ollamaProcess -and -not $ollamaProcess.HasExited) {
+            Write-Host "Stopping Ollama daemon (PID: $($ollamaProcess.Id))..." -ForegroundColor DarkGray
+            Stop-Process -Id $ollamaProcess.Id -Force -ErrorAction SilentlyContinue
+            Wait-Process -Id $ollamaProcess.Id -Timeout 3 -ErrorAction SilentlyContinue
+        }
+        Write-Host "All services stopped cleanly.`n" -ForegroundColor Green
     }
-    if ($ollamaProcess -and -not $ollamaProcess.HasExited) {
-        Write-Host "Stopping Ollama daemon (PID: $($ollamaProcess.Id))..." -ForegroundColor DarkGray
-        Stop-Process -Id $ollamaProcess.Id -Force -ErrorAction SilentlyContinue
-        Wait-Process -Id $ollamaProcess.Id -Timeout 3 -ErrorAction SilentlyContinue
-    }
-    Write-Host "All services stopped cleanly.`n" -ForegroundColor Green
 }
