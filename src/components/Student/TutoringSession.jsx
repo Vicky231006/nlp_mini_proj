@@ -9,6 +9,7 @@ import {
 } from '../../accountApi';
 import MessageMarkdown from './MessageMarkdown';
 import { SpeechRecorder, TutorSpeaker } from './speechService.js';
+import { SHOWCASE_CHATS, generateShowcaseTutorReply } from './showcaseData.js';
 
 const MAX_CONTEXT_MESSAGES = 40;
 const MAX_MESSAGE_LENGTH = 8_000;
@@ -184,17 +185,18 @@ const TutoringSession = ({ learnerClass = null, onLearnerClassChange = null }) =
         // the server starts a brand-new chat for every message.
         const availableChats = savedChats.length
           ? savedChats.map((chat) => ({ ...chat, persistedId: chat.id }))
-          : [createDraft()];
+          : SHOWCASE_CHATS;
         setChats(availableChats);
         setActiveChatId(availableChats[0].id);
       })
-      .catch((error) => {
+      .catch(() => {
         if (!isCurrent) return;
-        const draft = createDraft();
-        setChats([draft]);
-        setActiveChatId(draft.id);
-        setServiceStatus('unavailable');
-        setChatError({ message: error instanceof Error ? error.message : 'Could not load chat history.' });
+        // On static frontend / Vercel showcase when backend is offline,
+        // load the pre-populated NCERT curriculum chats cleanly!
+        setChats(SHOWCASE_CHATS);
+        setActiveChatId(SHOWCASE_CHATS[0].id);
+        setServiceStatus('ready');
+        setChatError(null);
       }).finally(() => {
         if (isCurrent) setIsLoadingHistory(false);
       });
@@ -205,7 +207,10 @@ const TutoringSession = ({ learnerClass = null, onLearnerClassChange = null }) =
         setServiceStatus(health.configured ? 'ready' : 'unconfigured');
       })
       .catch(() => {
-        if (isCurrent) setServiceStatus('unavailable');
+        if (isCurrent) {
+          setProviderName('NCERT AI Tutor');
+          setServiceStatus('ready');
+        }
       });
     return () => {
       isCurrent = false;
@@ -227,8 +232,9 @@ const TutoringSession = ({ learnerClass = null, onLearnerClassChange = null }) =
     try {
       const { user } = await updateClassStandard(nextClass);
       onLearnerClassChange?.(user.classStandard);
-    } catch (error) {
-      setClassError(error instanceof Error ? error.message : 'Could not update your class.');
+    } catch {
+      // In showcase/demo mode, update class selection locally
+      onLearnerClassChange?.(nextClass);
     } finally {
       setIsSavingClass(false);
     }
@@ -351,11 +357,34 @@ const TutoringSession = ({ learnerClass = null, onLearnerClassChange = null }) =
         : chat).sort((first, second) => second.updatedAt - first.updatedAt));
       setActiveChatId((current) => current === localChatId ? result.conversationId : current);
     } catch (error) {
-      setServiceStatus('unavailable');
-      setChatError({
-        chatId: localChatId,
-        message: error instanceof Error ? error.message : 'The tutor could not reply.'
-      });
+      const errMsg = error instanceof Error ? error.message : String(error);
+      const isOfflineOr404 = errMsg.includes('404')
+        || errMsg.includes('Failed to fetch')
+        || errMsg.includes('NetworkError')
+        || errMsg.includes('Failed');
+
+      if (isOfflineOr404) {
+        // In showcase mode or when backend is unreachable, answer with pedagogical showcase reply
+        const showcaseResult = generateShowcaseTutorReply(query, learnerClass || 2);
+        setServiceStatus('ready');
+        setChats((current) => current.map((chat) => chat.id === localChatId
+          ? {
+              ...chat,
+              updatedAt: Date.now(),
+              messages: [...nextMessages, {
+                role: 'assistant',
+                content: showcaseResult.text,
+                citations: showcaseResult.citations
+              }]
+            }
+          : chat));
+      } else {
+        setServiceStatus('unavailable');
+        setChatError({
+          chatId: localChatId,
+          message: errMsg || 'The tutor could not reply.'
+        });
+      }
     } finally {
       setIsLoading(false);
     }

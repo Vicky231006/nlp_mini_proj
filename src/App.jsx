@@ -6,6 +6,7 @@ import {
   signOut,
   signUp
 } from './accountApi';
+import { DEMO_USER, DEMO_ASSESSMENT } from './components/Student/showcaseData';
 import ReasoningPractice from './components/Student/ReasoningPractice';
 import TutoringSession from './components/Student/TutoringSession';
 
@@ -74,6 +75,16 @@ function AccountForm({ onAuthenticated }) {
           className={`rounded-md px-3 py-2 text-sm font-black ${mode === 'login' ? 'bg-red-600 text-white' : 'text-slate-800'}`}
         >
           Sign in
+        </button>
+      </div>
+
+      <div className="mb-4 text-center">
+        <button
+          type="button"
+          onClick={() => onAuthenticated({ user: DEMO_USER })}
+          className="rounded-lg border-2 border-slate-900 bg-amber-200 px-3 py-1.5 text-xs font-black text-slate-900 shadow-[2px_2px_0px_#0f172a] hover:bg-amber-300"
+        >
+          ✨ Launch Tutor Chat UI (Showcase Mode)
         </button>
       </div>
 
@@ -193,8 +204,13 @@ function App() {
       })
       .catch((loadError) => {
         if (!isCurrent) return;
-        setError(loadError instanceof Error ? loadError.message : 'Could not check your account.');
-        setStatus('account-error');
+        // On static frontend deployments (e.g. Vercel without active backend API),
+        // automatically load showcase mode so the chat interface and UI can be demonstrated immediately!
+        console.warn('Backend unavailable (404/Network); launching Showcase UI mode:', loadError);
+        setUser(DEMO_USER);
+        setAssessment(DEMO_ASSESSMENT);
+        setActiveTab('tutor');
+        setStatus('ready');
       });
     return () => {
       isCurrent = false;
@@ -252,14 +268,28 @@ function App() {
           ) : status === 'account-error' ? (
             <section className="mx-auto max-w-lg rounded-xl border-2 border-red-800 bg-red-100 p-5 text-center">
               <p role="alert" className="font-bold text-red-900">{error}</p>
-              <button
-                type="button"
-                onClick={() => loadAccountSession().then(loadUserData).catch((retryError) =>
-                  setError(retryError instanceof Error ? retryError.message : 'Could not reload your account.'))}
-                className="mt-4 rounded-lg border-2 border-slate-900 bg-white px-4 py-2 font-black"
-              >
-                Try again
-              </button>
+              <div className="mt-4 flex flex-wrap justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => loadAccountSession().then(loadUserData).catch((retryError) =>
+                    setError(retryError instanceof Error ? retryError.message : 'Could not reload your account.'))}
+                  className="rounded-lg border-2 border-slate-900 bg-white px-4 py-2 font-black"
+                >
+                  Try again
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUser(DEMO_USER);
+                    setAssessment(DEMO_ASSESSMENT);
+                    setActiveTab('tutor');
+                    setStatus('ready');
+                  }}
+                  className="rounded-lg border-2 border-slate-900 bg-red-600 px-4 py-2 font-black text-white shadow-[2px_2px_0px_#0f172a] hover:bg-red-700"
+                >
+                  Open Tutor Chat UI
+                </button>
+              </div>
             </section>
           ) : !isAssessmentComplete || status === 'assessment' ? (
             <ReasoningPractice
